@@ -22,7 +22,11 @@ The local machine had a globally configured legacy Conda PROJ database. Testing
 used the PROJ database bundled with the active rasterio installation; the local
 PowerShell launcher does the same without changing permanent system settings.
 
+GitHub Actions passed on Python 3.11, 3.12 and 3.13 for the initial private
+repository upload (commit b3bed9610555b762cd960ea53186e907967bb5e9;
+[workflow run](https://github.com/Cesarito2021/pyNISAR/actions/runs/36297507441)).
+
 Not yet verified: deployment to Streamlit Community Cloud, installation/running
 on Colab or CryoCloud, optional polsartools decompositions in this extraction,
-and live authenticated NASA retrieval through pyNISAR. CI for Python 3.11–3.13
-is supplied but has not run on GitHub. Publication to PyPI/Zenodo is pending.
+and live authenticated NASA retrieval through pyNISAR. Public web hosting is
+authorized; the repository stays private. PyPI/Zenodo publication is not authorized.

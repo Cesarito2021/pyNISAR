@@ -30,7 +30,7 @@ with st.sidebar:
     st.caption('L-BAND RADAR EXPLORER')
     page = st.radio('Workspace', ['Explore & generate', 'Find observations', 'Figures', 'About & cite'])
     st.divider()
-    st.caption('GSLC · GCOV · RSLC\n\nPrivate research alpha · 0.1.0a1')
+    st.caption('GSLC · GCOV · RSLC\n\nResearch alpha · 0.1.0a1')
 
 
 def download_run(run):
@@ -201,4 +201,4 @@ else:
     st.subheader('Acknowledgments')
     st.write('The author thanks CryoCloud for providing access to its Python/Jupyter environment, supported by NASA grants 80NSSC22K1877 and 80NSSC23K0002. The manuscript processing was performed in Google Colab.')
     st.link_button('CryoCloud acknowledgment guidance','https://book.cryointhecloud.com/citing-cryocloud')
-    st.caption('Private, unpublished research software · GPL-3.0-only, matching PyGeoObserver. No NASA/ISRO endorsement. Source product calibration and quality flags require product-specific assessment.')
+    st.caption('Research software · GPL-3.0-only, matching PyGeoObserver. No NASA/ISRO endorsement. Source product calibration and quality flags require product-specific assessment.')

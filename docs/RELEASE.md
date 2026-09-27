@@ -1,80 +1,64 @@
-# Private development — no publication authorized
+# Public app, private GitHub repository
 
-**Owner instruction: keep pyNISAR private and unpublished.**
+The owner's current instruction is to make the **web app public** while keeping
+**Cesarito2021/pyNISAR private on GitHub**. This supersedes the earlier restriction
+on public app hosting. It does not authorize publishing the repository, uploading
+the package to PyPI or creating a Zenodo deposit.
 
-Do not publish the code, documentation, datasets, package artifacts or app.
-If a GitHub repository is created in future authorized work, it must be private.
-Public release or hosting requires a new explicit instruction from Cesar Alvites.
-The earlier discussion of public hosting is superseded by this instruction.
-The local app launcher binds to 127.0.0.1; do not expose it through a public tunnel.
+## Current state
 
-The license remains **GPL-3.0-only**, identical to PyGeoObserver. The LICENSE
-files were verified byte-for-byte. Preserve existing attribution in NOTICE.
+The code is in the private repository:
+https://github.com/Cesarito2021/pyNISAR
 
-## Deferred release reference — do not execute
+The local preview runs at http://127.0.0.1:8517 on the computer running the
+launcher. That address cannot open the app from a phone or another computer.
+Public Streamlit deployment is prepared but waiting for the owner to sign in.
+No public app URL exists yet.
 
-The steps below are retained only as notes for a possible future change of
-direction. They are not the current plan and do not authorize any upload,
-repository creation, public release or deployment.
+## Deploy the public app
 
-Current status: private research-alpha package and Python app. The private GitHub
-repository is [Cesarito2021/pyNISAR](https://github.com/Cesarito2021/pyNISAR).
-Sign in to GitHub as its owner or an authorized collaborator to view it.
-No public repository, PyPI distribution, release DOI or public app URL has been created.
-The local app runs at http://127.0.0.1:8517 on the computer running the launcher;
-that address cannot open the app on a phone or another computer.
+Streamlit supports public apps backed by private GitHub repositories. Follow
+[the deployment guide](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/deploy)
+and [the app visibility guide](https://docs.streamlit.io/deploy/streamlit-community-cloud/share-your-app).
 
-A private hosted app is pending Streamlit account sign-in and verification that
-access is restricted. Do not deploy with public visibility.
+1. Sign in at https://share.streamlit.io/ and handle the account's terms of service.
+2. Connect the required GitHub access for this private repository. Review any
+   new access request with the owner; never change the repository to public.
+3. Create an app with repository `Cesarito2021/pyNISAR`, branch `main`, entrypoint
+   `streamlit_app.py`, and Python 3.12. Dependencies are in `requirements.txt`.
+4. An app from a private repository starts private. After deployment, use the
+   app's Sharing settings to select **This app is public and searchable**.
+   This app visibility change is explicitly authorized by the owner.
+5. Verify the app works without signing in and separately verify GitHub still
+   reports the repository as private. Only then record the actual app URL in README.
 
-## Release metadata
+Use the free hosting tier. Do not activate a paid service or change repository
+visibility to work around access problems. No credentials are needed by visitors
+for the bundled examples. Protected NASA downloads run in visitors' own Python
+sessions; the app does not collect Earthdata credentials.
 
-Software credit is Cesar Alvites. The manuscript's 16 authors and their order
-have been transcribed from the corresponding author's submission cover sheet.
-Keep the paper marked "submitted; not yet published" until its status changes.
-Add a public preprint or publication URL and bibliographic dates when available.
-Check PyPI name availability immediately before creating the distribution; no
-claim or reservation of `pynisar` is implied by the project metadata.
-Retain GPL-3.0-only and PyGeoObserver attribution for extracted code.
+The demo uses small measured subsets. HDF5 uploads are limited to 64 MB and
+processing to windows of at most 512 source pixels per side. Outputs are
+session-specific and temporary. Download results to retain them. The app is not
+a full-scene processing cluster; use local Python or Jupyter for larger products.
 
-## GitHub and software archive
+## License and citation
 
-Create `Cesarito2021/pyNISAR`, upload this project, and run the included CI.
-Tag a tested release, e.g. `v0.1.0a1`. Connect that repository to Zenodo before
-publishing the GitHub release if a software DOI is desired. Add the actual
-repository URL and assigned DOI to README and CITATION.cff afterward.
-The manuscript DOI and software DOI describe different research outputs.
+Retain **GPL-3.0-only**, identical to PyGeoObserver. The LICENSE files were checked
+byte-for-byte. Preserve attribution in NOTICE and docs/PROVENANCE.md.
 
-## Python Package Index
+Software credit is Cesar Alvites. The manuscript's 16 authors follow the supplied
+submission cover sheet. Keep it marked **submitted; not yet published** until
+its status changes. No publication year or DOI is assigned here.
+
+## Local checks
 
 ```bash
 python -m pip install ".[app,dev]"
 pytest -q
 python -m build
-python -m twine check dist/*
+streamlit run streamlit_app.py --server.address 127.0.0.1
 ```
 
-Configure a PyPI trusted publisher or use your own PyPI credentials to upload the
-reviewed distribution. Never commit a token. A successful local build does not
-mean a release has been published. See [PyPI publishing](https://packaging.python.org/en/latest/tutorials/packaging-projects/).
-
-## Free Python app hosting
-
-[Streamlit Community Cloud](https://docs.streamlit.io/deploy/streamlit-community-cloud)
-provides free app hosting linked to GitHub. Sign in with the repository owner's
-account, select the repository and branch, set `streamlit_app.py` as the entrypoint,
-and choose Python 3.12. The root `requirements.txt` installs the package and app
-dependencies. Keep `.streamlit/config.toml` in the repository.
-
-The demo calculates products from two small, measured, bundled subsets. HDF5
-uploads are limited to 64 MB and processing windows to 512 source pixels per side.
-Public NASA catalog search needs connectivity; authenticated downloads are left
-to visitors' own Python sessions. Temporary outputs are session-specific and
-not durable storage. Download results before leaving the app.
-
-Free hosting has changing CPU/memory limits and apps may sleep when inactive;
-it is not a full-scene NISAR processing cluster. Use Colab, CryoCloud or local
-Jupyter for larger products. [Resource guidance](https://docs.streamlit.io/deploy/streamlit-community-cloud/manage-your-app).
-
-The public deployment requires the repository owner's hosting login. Record and
-verify the actual live URL before adding an app badge to the README.
+The PowerShell launcher starts the local preview on port 8517. Building wheels
+and source archives does not publish them.

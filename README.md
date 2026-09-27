@@ -9,15 +9,16 @@ polarizations and export GeoTIFFs, statistics and scientific figures. Extracted
 from [PyGeoObserver](https://github.com/Cesarito2021/pygeoobserver), with a focused
 API and a map explorer inspired by [als_downloader](https://github.com/Cesarito2021/als_downloader).
 
-**Version 0.1.0a1 · private research alpha.** Keep this project private and
-unpublished. No public repository, PyPI release, Zenodo deposit or public app
-deployment is authorized. Any future GitHub repository must be private unless
-Cesar Alvites explicitly changes this instruction. pyNISAR is independent
+**Version 0.1.0a1 · research alpha.** The GitHub repository must remain **private**.
+Cesar Alvites has authorized a **public web app** so visitors can explore examples
+and generate products. Public source repositories, PyPI releases and Zenodo
+deposits remain outside the current authorization. pyNISAR is independent
 research software and does not claim NASA/ISRO affiliation or endorsement.
 
 **Private repository:** [Cesarito2021/pyNISAR](https://github.com/Cesarito2021/pyNISAR)
 (GitHub sign-in required). **App:** currently local at `http://127.0.0.1:8517`
-on the computer running the launcher. A private hosted app is not yet deployed.
+on the computer running the launcher. Public web hosting is authorized and
+prepared, but deployment is waiting for the owner's Streamlit sign-in.
 
 ## Install
 
@@ -37,7 +38,7 @@ streamlit run streamlit_app.py
 The app places input, polarization and layer controls on the left, with the map
 on the right. It includes measured examples, small HDF5 uploads, NASA collection
 search, figure generation, and a ZIP export of products and provenance.
-[Private development and release policy](docs/RELEASE.md) · [Python and notebook examples](examples).
+[App deployment and repository privacy](docs/RELEASE.md) · [Python and notebook examples](examples).
 
 ## First products · no account needed
 
