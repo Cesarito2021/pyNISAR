@@ -1,45 +1,47 @@
-# Repository reach
+# Repository visits
 
-Snapshot: 2026-09-27T18:55:37.337439+00:00 (UTC), from GitHub's authenticated traffic API.
-These are the rolling 14-day repository counts, not lifetime usage or downloads:
+The README badge sums GitHub page views recorded from **27 September 2026 UTC**.
+The [daily archive](traffic-history.json) is retained in Git; it does not reset
+monthly or when the repository becomes public. The latest timestamp is included
+in the archive. Today's count is provisional and GitHub can revise recent days.
 
-| Measure | Total | Unique |
-|---|---:|---:|
-| Views | 0 | 0 |
-| Clones | 0 | 0 |
-| Downloads | Not available | Not available |
-| Countries / continents | Not available | Not available |
+`tools/archive_traffic.py` reads the official GitHub traffic API. Each refresh
+replaces overlapping daily observations rather than adding rolling totals.
+Older observations remain stored. Daily unique visitors are preserved separately
+and **never summed as lifetime unique people**. Views are not downloads, installs,
+or use of the library. The library itself collects no telemetry.
 
-The source ZIP badge is a download link, not an installation counter. A clone is
-not a download of a NISAR scene. This snapshot does not update automatically.
-[Live traffic](https://github.com/Cesarito2021/pyNISAR/graphs/traffic) requires the
-appropriate repository permissions. The Python library collects no telemetry. The README now embeds the owner-requested MapMyVisitors image counter.
+## Daily collection
 
-GitHub's [traffic API](https://docs.github.com/en/rest/metrics/traffic) supplies
-views and clones, not visitor countries. GitHub's
-[Camo image proxy](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-anonymized-urls)
-hides browser information and caches images, so a third-party README image beacon
-cannot be presented as an accurate visitor-geography or download counter.
+A daily Codex task on the owner's computer refreshes the archive and badge,
+commits those two files, and pushes them to this repository. Codex must be running,
+the computer available, and GitHub authentication valid. This is a local schedule,
+not an unattended GitHub-hosted workflow. Repository visibility is not changed.
 
-A future external website could collect its own consented analytics and render
-an aggregate country map, but that would measure visitors to that website,
-not everyone who viewed this private GitHub repository. The README image counter is installed, but no separate website or JavaScript tracker was created.
+Manual refresh from the repository directory:
 
-Map boundaries: [Natural Earth](https://www.naturalearthdata.com/about/terms-of-use/),
-1:110m admin-0 countries, public domain. All countries share the same neutral
-fill because country data are unavailable; this does not mean zero visitors.
+```bash
+python tools/archive_traffic.py
+```
 
-## MapMyVisitors widget
+Authentication uses `GH_TOKEN` or the existing Git credential manager; no token
+is saved in the repository. GitHub requires access to repository traffic
+(fine-grained tokens require Administration: read).
 
-Configured on 27 September 2026 for `https://github.com/Cesarito2021/pyNISAR`.
-The provider supplied the plain-image embed used at the end of the README:
-[public statistics](https://mapmyvisitors.com/web/1c8hr).
-The owner can manage it through their MapMyVisitors account. No repository
-visibility or source-code access was granted to the provider.
+The collector revisits the latest 13 days plus today, avoiding the oldest rolling
+window boundary. Short interruptions can be recovered. Longer interruptions may
+leave missing dates, explicitly listed in the archive; the badge then says
+"Recorded views" instead of implying complete coverage. Authentication/API
+errors leave the previous archive unchanged. Neither GitHub nor this archive can
+reconstruct older uncollected traffic.
 
-The displayed total counts requests seen by the provider; it does not establish
-how many individual people read this GitHub repository. GitHub's image proxy
-and cache obscure or suppress direct visitor requests, so geography can reflect
-proxy infrastructure. It cannot recover historical countries or count library
-installs, source ZIP downloads, or NASA file downloads. The former neutral map
-asset is no longer displayed in the README.
+## Countries
+
+GitHub does not provide visitor countries or identities. The optional
+[MapMyVisitors widget](https://mapmyvisitors.com/web/1c8hr) counts requests received
+by that provider. GitHub's image proxy and caching mean its totals and locations
+are **not reliable measurements of GitHub readers**. The accumulated-views badge
+uses GitHub's API, never that widget's numbers.
+
+Sources: [GitHub traffic API](https://docs.github.com/en/rest/metrics/traffic),
+[GitHub image proxy](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-anonymized-urls).

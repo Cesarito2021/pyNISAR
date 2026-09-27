@@ -321,7 +321,16 @@ arising from its use. pyNISAR is not an official NASA or ISRO software product.
 **GNU General Public License v3.0 only (GPL-3.0-only)**, matching PyGeoObserver.
 See [LICENSE](LICENSE) for the terms and [provenance](docs/PROVENANCE.md) for credits.
 
-## Visitor map
+## Repository visits
+
+[![Accumulated repository views](docs/assets/traffic-views.svg)](docs/traffic-history.json)
+
+Views recorded since **27 September 2026 (UTC)**, retained without a monthly
+reset. Repeat visits count; this is **not a lifetime count of distinct people**.
+[Daily archive and last update](docs/traffic-history.json) ·
+[Collection method](docs/TRAFFIC.md).
+
+### Optional visitor map
 
 <a href="https://mapmyvisitors.com/web/1c8hr" title="Open pyNISAR visitor statistics"><img src="https://mapmyvisitors.com/map.png?d=UlM_gh6v465FM660XfpiYiacAyu3LsJfKbrNqBiN-qw&amp;cl=ffffff" alt="pyNISAR MapMyVisitors map" width="100%"></a>
 
