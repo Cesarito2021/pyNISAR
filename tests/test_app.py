@@ -15,8 +15,15 @@ def test_example_figures_and_navigation():
     assert not app.exception
     app.sidebar.radio[0].set_value('About & cite').run()
     assert not app.exception
+    app.session_state['collections'] = [{'concept_id':'C-test','short_name':'NISAR_GCOV','version':'001'}]
     app.sidebar.radio[0].set_value('Find observations').run()
     assert not app.exception
+    import ast
+    ast.parse(app.code[-1].value)
+    assert "scope='aoi'" in app.code[-1].value
+    assert 'delete_source=False' in app.code[-1].value
+    next(r for r in app.radio if r.label == 'Products cover').set_value('Entire tile').run()
+    assert "scope='tile'" in app.code[-1].value
     app.sidebar.radio[1].set_value('GeoJSON / GeoPackage').run()
     assert not app.exception
     assert app.button[-1].disabled

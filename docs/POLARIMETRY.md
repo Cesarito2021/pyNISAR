@@ -61,7 +61,9 @@ With descending normalized Pauli T3 eigenvalues `p1,p2,p3`:
 - Reciprocity residual is `E|HV−VH|² / (E|HV|² + E|VH|²)`.
 
 The full Shannon sum is not exported as a nineteenth layer. Original C4 covariance
-and normalized C3 are retained for independent checks. Positive repeated full-pol
+and normalized C3 are retained by the small-window `process()` workflow for independent checks.
+Chunked `process_tile()` / `process_batch()` save metric rasters without these
+additional covariance archives to reduce storage. Positive repeated full-pol
 eigenvalues leave alpha non-unique; it is recorded as NaN.
 
 ## Spatial and numerical support

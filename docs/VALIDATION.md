@@ -3,13 +3,19 @@
 Local environment: Python 3.12.14, NumPy 2.5.3, rasterio 1.5.1, h5py 3.16.0,
 matplotlib 3.11.1, Streamlit 1.63.0, Folium 0.20.0; Windows.
 
-All **27 tests passed** locally after the AOI update. They exercise GSLC/GCOV/RSLC reading and exports, missing covariance terms,
+All **35 tests passed** locally after the chunked tile/batch update. They exercise GSLC/GCOV/RSLC reading and exports, missing covariance terms,
 quad reciprocity/scaling, radar-coordinate guards, HTTP byte-range limits,
 measured dual/quad sample statistics, map reprojection, discovery validation,
 and app navigation/figure generation. Synthetic fixtures test numerical and
 product-format edge cases; README and app examples use measured observations.
 AOI checks cover GeoJSON, projected GeoPackages, multiple layers, polygon holes,
 invalid geometries and missing CRS, candidate limits and missing footprints.
+Batch checks compare every quad-pol layer against single-window processing for
+GSLC/GCOV/RSLC, including chunk seams, transforms and CRS. They also check AOI
+holes, box clipping, bounded reads, trailing look cells, source retention after
+simulated processing failure, opt-in deletion after success, cleanup errors,
+and parallel batch isolation. Mission-scale throughput and live authenticated
+download/cleanup have not been benchmarked.
 
 Both measured samples reproduce every saved metric mean within relative
 tolerance 1e-5 and absolute tolerance 1e-8, retaining source windows and looks.

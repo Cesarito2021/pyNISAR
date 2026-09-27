@@ -6,8 +6,9 @@ from .product_plots import plot_product as plot, write_product_study as report
 from .decompositions import decompose
 from .remote import open_remote
 from .samples import sample, process_sample
+from .batch import process_tile, process_batch
 
 __version__ = '0.1.0a1'
 __all__ = ['inspect', 'read', 'process', 'plot', 'report', 'plot_halpha',
            'plot_haalpha', 'plot_htheta', 'decompose', 'open_remote',
-           'sample', 'process_sample']
+           'sample', 'process_sample', 'process_tile', 'process_batch']

@@ -215,14 +215,32 @@ elif page == 'Find observations':
         st.dataframe(rows, use_container_width=True)
     st.caption('The AOI selects intersecting scenes; it does not clip the downloaded HDF5 files. Keep enough disk space for the selected files and outputs. No separate cloud-storage account is needed.')
     if selected and area_valid:
+        with st.expander('Large-file Python workflow'):
+            st.caption('These settings generate Python code to run locally or in your notebook. The app does not start a full-tile job.')
+            output_scope = st.radio('Products cover', ['AOI only', 'Entire tile'])
+            block_size = st.selectbox('Input chunk size (pixels per side)', [128,256,512,1024], index=1)
+            tile_workers = st.number_input('Concurrent tile workers', min_value=1, max_value=4, value=1)
+            cleanup_h5 = st.checkbox('Delete each local HDF5 after successful product export', value=False)
+            assume_reciprocal = st.checkbox('Use the reciprocity assumption for quad-pol descriptors', value=False)
+            st.caption('Start with one worker for quad-pol. Smaller chunks reduce memory, not the size of complete source downloads. Failed jobs retain their HDF5 files.')
         spatial_code = f'bbox={(west,south,east,north)!r}' if area_input == 'Bounding box' else f'aoi={area_upload.name!r}' + (f', layer={area_layer!r}' if area_layer else '')
         st.code(f'''from pynisar.discovery import search
+from pynisar import process_batch
 import earthaccess
 granules = search({selected['concept_id']!r}, {spatial_code},
                   start={str(start)!r}, end={str(end)!r}, count={candidate_limit})
 earthaccess.login(persist=False)
-# Select the specific granule(s) to download before calling:
-# earthaccess.download([granules[0]], local_path="data")''', language='python')
+# Inspect granules first, then explicitly select those to process:
+selected_granules = []  # e.g. [granules[0]]
+for granule in selected_granules:
+    files = earthaccess.download([granule], local_path="data")
+    results = process_batch(
+        files, "products", scope={('aoi' if output_scope == 'AOI only' else 'tile')!r},
+        {spatial_code}, chunk_size={block_size}, workers={int(tile_workers)},
+        reciprocal={assume_reciprocal}, delete_source={cleanup_h5})
+    print(results)
+    if any(r['status'] != 'complete' or r.get('cleanup_error') for r in results):
+        raise RuntimeError("Inspect the failed job or cleanup error before continuing.")''', language='python')
 
 elif page == 'Figures':
     st.title('Measured examples. Reproducible figures.')

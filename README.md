@@ -66,10 +66,30 @@ For downloads, log in from your own Python session with
 - **Figures:** power maps, H–α density and quad-pol H–A–α diagrams; PNG and SVG.
 - **Records:** statistics CSV, covariance and a processing manifest with provenance.
 
-Processing uses bounded windows. Phase descriptors require complex covariance;
+Choose **AOI-only** or **entire-tile** products. Large files are read in chunks;
+tiles can run sequentially or with optional parallel workers:
+
+```python
+results = pynisar.process_batch(
+    ["scene_1.h5", "scene_2.h5"], "products",
+    scope="aoi", aoi="study_area.gpkg", layer="boundary",
+    chunk_size=256, workers=1, reciprocal=True,
+    delete_source=False,  # True: delete each HDF5 only after successful export.
+)
+print(results)  # Check each tile's status.
+# For the whole tile: scope="tile". For a box: bbox=(west, south, east, north).
+```
+
+Each tile gets separate compressed GeoTIFFs and a processing record. Start with
+one worker for quad-pol; parallel workers multiply memory use. To save disk,
+download and process one scene at a time, optionally deleting its HDF5 afterward.
+[Batch processing, cleanup and limits](docs/BATCH.md).
+
+Phase descriptors require complex covariance;
 quad-pol processing requires measured HH/HV/VH/VV and explicit reciprocity.
-RSLC stays in radar coordinates. Full-scene processing, terrain correction and
-carbon prediction are not included. [Definitions and limits](docs/POLARIMETRY.md).
+RSLC stays in radar coordinates and supports entire-tile processing, not geographic
+AOI clipping. Terrain correction and carbon prediction are not included.
+[Definitions and limits](docs/POLARIMETRY.md).
 
 ## Measured examples
 

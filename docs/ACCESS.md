@@ -70,9 +70,16 @@ instance, not total RAM or output storage; a subset can still exceed that budget
 Authentication and byte-range support are required. Derived products still need
 an output folder. Remote reading does not supply a storage service.
 
-Native processing reads bounded windows, not full-scene mosaics or AOI-shaped
-pixel clips. GSLC/GCOV can use `center=(longitude, latitude)`; RSLC uses
-`pixel=(row, column)` and remains in radar coordinates.
+`process_tile()` and `process_batch()` read chunks and write either the whole tile
+or AOI-masked GSLC/GCOV products. Each tile has its own output folder. The default
+keeps source HDF5 files; `delete_source=True` removes each source only after
+successful export. Downloading one granule at a time keeps the source inventory
+small. Chunking limits working memory; it does not shrink a full HDF5 download.
+[Batch workflow and limits](BATCH.md).
+
+The original `process()` remains a small-window workflow: GSLC/GCOV can use
+`center=(longitude, latitude)`; RSLC uses `pixel=(row, column)` and remains in radar
+coordinates. Geographic AOI masks require geocoded GSLC/GCOV products.
 
 The app runs locally and uses temporary session folders. Save its ZIP download
 to keep results. The Python API writes to the output folder you choose. Notebook

@@ -130,7 +130,7 @@ def _slc(g, channels, window, looks, shape):
 
 
 def read_window(source, *, frequency='A', channels=None, center=None, pixel=None,
-                window_size=256, looks=(1,1)):
+                window_size=256, looks=(1,1), raster_window=None):
     """Read a small native product window. RSLC never receives a fabricated map CRS.
 
     GCOV covariance is preserved as supplied; absent cross terms stay absent.
@@ -146,7 +146,25 @@ def read_window(source, *, frequency='A', channels=None, center=None, pixel=None
         if not channels or len(channels)!=len(set(channels)) or not set(channels)<=set(available):
             raise ValueError('Requested distinct channels are not present in this frequency.')
         shape = g[channels[0]*2 if product=='GCOV' else channels[0]].shape
-        window,affine,crs = _selection(g,product,center,pixel,window_size,looks,shape)
+        if raster_window is None:
+            window,affine,crs = _selection(g,product,center,pixel,window_size,looks,shape)
+        else:
+            if center is not None or pixel is not None:
+                raise ValueError('raster_window cannot be combined with center or pixel.')
+            if len(raster_window) != 4 or any(type(v) is not int for v in raster_window):
+                raise ValueError('raster_window is integer (row, column, height, width).')
+            r,c,nr,nc = raster_window
+            if min(r,c)<0 or min(nr,nc)<1 or max(nr,nc)>4096 or r+nr>shape[0] or c+nc>shape[1] or nr%looks[0] or nc%looks[1]:
+                raise ValueError('raster_window must be bounded, at most 4096 pixels per side, and divisible by looks.')
+            window = list(raster_window)
+            if product == 'RSLC':
+                affine,crs = None,None
+            else:
+                # Reuse the established map-grid validation before applying offsets.
+                _,_,crs = _selection(g,product,None,None,max(looks),looks,shape)
+                dx,dy = float(g['xCoordinateSpacing'][()]),float(g['yCoordinateSpacing'][()])
+                affine = Affine(dx*looks[1],0,float(g['xCoordinates'][c])-dx/2,
+                                0,dy*looks[0],float(g['yCoordinates'][r])-dy/2)
         powers,cov = (_gcov if product=='GCOV' else _slc)(g,channels,window,looks,shape)
     info = {'product':product,'frequency':frequency,'channels':channels,'window':window,
             'looks':list(looks),'geometry':'radar' if product=='RSLC' else 'map',
