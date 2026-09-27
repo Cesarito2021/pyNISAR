@@ -16,6 +16,10 @@ selected data, and generates cross-polarization and polarimetric products for
 applications such as forest monitoring. This research library focuses on **L-band
 GSLC, GCOV and RSLC**, using code developed for [PyGeoObserver](https://github.com/Cesarito2021/pygeoobserver).
 
+Its focus is a guided NISAR workflow: **define an area → search observations →
+access or download data → generate polarimetric products → export maps and figures**.
+This integrates data access and processing around established polarimetric methods.
+
 ## Configuration and account credentials
 
 | Requirement | Configuration |
@@ -294,6 +298,12 @@ supported by NASA grants **80NSSC22K1877** and **80NSSC23K0002**. Manuscript
 processing was performed in **Google Colab**.
 [CryoCloud acknowledgment guidance](https://book.cryointhecloud.com/citing-cryocloud).
 
+We acknowledge [PolSARtools](https://github.com/polsartools/polsartools) and its
+developers for their contribution to open polarimetric SAR processing and their
+influence on this workflow. pyNISAR's core metric calculations use native
+implementations; selected optional decompositions call **PolSARtools 0.11**.
+See [metric definitions](docs/POLARIMETRY.md) and the citation below.
+
 ## Reporting issues
 
 Please report pyNISAR issues to postdoctoral fellow **Cesar Alvites** at
@@ -307,6 +317,14 @@ aboveground carbon mapping in the Brazilian Amazon–Cerrado ecotone.*
 **Remote Sensing Applications: Society and Environment (under review).**
 Not yet published; no publication DOI is assigned.
 [Full author list and software citation](CITATION.cff).
+
+When using the optional PolSARtools-based decompositions, also cite:
+
+Bhogapurapu, N., Siqueira, P., & Bhattacharya, A. (2026).
+*polsartools: A Cloud-Native Python Library for Processing Open Polarimetric SAR
+Data at Scale.* **SoftwareX, 33**, 102490.
+[doi:10.1016/j.softx.2025.102490](https://doi.org/10.1016/j.softx.2025.102490).
+The original references for the polarimetric methods used should also be cited.
 
 ## Disclaimer
 
