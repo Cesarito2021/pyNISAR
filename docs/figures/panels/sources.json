@@ -1,0 +1,48 @@
+{
+  "dual": {
+    "source": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GSLC_PROVISIONAL_V1/NISAR_L2_PR_GSLC_004_113_D_065_2005_QPDH_A_20251106T010537_20251106T010600_P05023_N_P_J_001/NISAR_L2_PR_GSLC_004_113_D_065_2005_QPDH_A_20251106T010537_20251106T010600_P05023_N_P_J_001.h5",
+    "product": "GSLC",
+    "channels": [
+      "HH",
+      "HV"
+    ],
+    "channel_selection": "HH/HV subset of a measured quad acquisition",
+    "window": [
+      34892,
+      12264,
+      256,
+      256
+    ],
+    "looks": [
+      4,
+      2
+    ],
+    "basis": "[HH, HV]",
+    "radiometry": "uncorrected mean |S|^2",
+    "reciprocity_assumption": false
+  },
+  "quad": {
+    "source": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GCOV_PROVISIONAL_V1/NISAR_L2_PR_GCOV_004_113_D_065_2005_QPDH_A_20251106T010537_20251106T010600_P05023_N_P_J_001/NISAR_L2_PR_GCOV_004_113_D_065_2005_QPDH_A_20251106T010537_20251106T010600_P05023_N_P_J_001.h5",
+    "product": "GCOV",
+    "channels": [
+      "HH",
+      "HV",
+      "VH",
+      "VV"
+    ],
+    "channel_selection": "all measured channels",
+    "window": [
+      8691,
+      6132,
+      128,
+      128
+    ],
+    "looks": [
+      1,
+      1
+    ],
+    "basis": "reciprocal C3 / Pauli T3",
+    "radiometry": "as-stored GCOV (nominal gamma0)",
+    "reciprocity_assumption": true
+  }
+}

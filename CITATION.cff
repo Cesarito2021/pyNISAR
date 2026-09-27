@@ -1,0 +1,36 @@
+cff-version: 1.2.0
+message: "Please cite the pyNISAR software version used. The related manuscript listed below has been submitted to Remote Sensing Applications: Society and Environment and is not yet published."
+type: software
+title: "pyNISAR: NISAR L-band SAR processing and polarimetry in Python"
+version: 0.1.0a1
+authors:
+  - family-names: Alvites
+    given-names: Cesar
+license: GPL-3.0-only
+abstract: "Independent NISAR GSLC, GCOV and RSLC inspection, bounded processing, polarimetric descriptors, figures and map exploration, derived from PyGeoObserver."
+keywords:
+  - NISAR
+  - SAR
+  - polarimetry
+  - remote sensing
+references:
+  - type: unpublished
+    title: "Early assessment of NISAR L-band SAR and multi-sensor fusion for aboveground carbon mapping in the Brazilian Amazon–Cerrado ecotone"
+    authors:
+      - name: Cesar Alvites
+      - name: Carlos Alberto Silva
+      - name: Inacio Thomaz Bueno
+      - name: Ana Paula Dalla Corte
+      - name: Caio Hamamura
+      - name: José Augusto Spiazzi Favarin
+      - name: Lucas Bielak Rezende
+      - name: Gabriel Máximo Da Silva
+      - name: Fabiano Rodrigues Pereira
+      - name: Alexander J. Gaskins
+      - name: Ruben Valbuena
+      - name: Viswanath Nandigam
+      - name: Chelsea Scott
+      - name: Na Chen
+      - name: Carine Klauberg
+      - name: Andrew Hudak
+    notes: "Manuscript submitted to Remote Sensing Applications: Society and Environment; not yet published. Author order transcribed from the author's submission cover sheet. No publication year or DOI is assigned here."

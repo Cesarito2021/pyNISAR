@@ -1,0 +1,296 @@
+{
+  "product": "GCOV",
+  "frequency": "A",
+  "channels": [
+    "HH",
+    "HV",
+    "VH",
+    "VV"
+  ],
+  "window": [
+    8691,
+    6132,
+    128,
+    128
+  ],
+  "looks": [
+    1,
+    1
+  ],
+  "geometry": "map",
+  "crs": "EPSG:32615",
+  "center_lonlat": [
+    -90.2,
+    46.45
+  ],
+  "radar_pixel": null,
+  "source": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GCOV_PROVISIONAL_V1/NISAR_L2_PR_GCOV_004_113_D_065_2005_QPDH_A_20251106T010537_20251106T010600_P05023_N_P_J_001/NISAR_L2_PR_GCOV_004_113_D_065_2005_QPDH_A_20251106T010537_20251106T010600_P05023_N_P_J_001.h5",
+  "radiometry": "as-stored GCOV (nominal gamma0)",
+  "additional_radiometric_correction": false,
+  "filter": "boxcar_only",
+  "covariance_complete": true,
+  "response_body_bytes_read": 0,
+  "reciprocity_assumption": true,
+  "implementation": "geoweave-eo native v3",
+  "original_response_body_bytes": 65011712,
+  "replayed_from": "PyGeoObserver/nisar_product_cases/case-gcov-3721e65afc96444f876f85452346e97a",
+  "channel_selection": "all measured channels",
+  "status": "complete",
+  "basis": "reciprocal C3 / Pauli T3",
+  "metric_profile": "quad18",
+  "metrics": {
+    "HH": {
+      "count": 16384,
+      "finite_fraction": 1.0,
+      "min": 0.00750809907913208,
+      "median": 0.3000774383544922,
+      "mean": 0.3410694965386938,
+      "max": 12.123779296875,
+      "std": 0.3082763170576321,
+      "file": "HH.tif",
+      "shape": [
+        128,
+        128
+      ]
+    },
+    "HV": {
+      "count": 16384,
+      "finite_fraction": 1.0,
+      "min": 0.0018981099128723145,
+      "median": 0.06953668594360352,
+      "mean": 0.07673359414184233,
+      "max": 2.1290283203125,
+      "std": 0.05830516470972114,
+      "file": "HV.tif",
+      "shape": [
+        128,
+        128
+      ]
+    },
+    "VH": {
+      "count": 16384,
+      "finite_fraction": 1.0,
+      "min": 0.0018916428089141846,
+      "median": 0.07242679595947266,
+      "mean": 0.07965261813751567,
+      "max": 2.3277587890625,
+      "std": 0.06112819823099907,
+      "file": "VH.tif",
+      "shape": [
+        128,
+        128
+      ]
+    },
+    "VV": {
+      "count": 16384,
+      "finite_fraction": 1.0,
+      "min": 0.004309952259063721,
+      "median": 0.21338367462158203,
+      "mean": 0.24170463211703463,
+      "max": 7.37005615234375,
+      "std": 0.19536951840986969,
+      "file": "VV.tif",
+      "shape": [
+        128,
+        128
+      ]
+    },
+    "HV_reciprocal": {
+      "count": 16384,
+      "finite_fraction": 1.0,
+      "min": 0.0010596364736557007,
+      "median": 0.029384359717369073,
+      "mean": 0.03220503320883028,
+      "max": 1.0238180160522459,
+      "std": 0.024583325458576163,
+      "file": "HV_reciprocal.tif",
+      "shape": [
+        128,
+        128
+      ]
+    },
+    "span": {
+      "count": 16384,
+      "finite_fraction": 1.0,
+      "min": 0.021455854177474976,
+      "median": 0.6133477687835693,
+      "mean": 0.647184195073389,
+      "max": 19.42014455795288,
+      "std": 0.48219417530254455,
+      "file": "span.tif",
+      "shape": [
+        128,
+        128
+      ]
+    },
+    "entropy": {
+      "count": 16384,
+      "finite_fraction": 1.0,
+      "min": 0.02737287168569555,
+      "median": 0.7163636054373561,
+      "mean": 0.7014396401606684,
+      "max": 0.9600514052461278,
+      "std": 0.11099524574477707,
+      "file": "entropy.tif",
+      "shape": [
+        128,
+        128
+      ]
+    },
+    "alpha": {
+      "count": 16384,
+      "finite_fraction": 1.0,
+      "min": 18.09001766449401,
+      "median": 50.80417295869651,
+      "mean": 51.02556217749827,
+      "max": 81.64625641763645,
+      "std": 7.409377189929035,
+      "file": "alpha.tif",
+      "shape": [
+        128,
+        128
+      ]
+    },
+    "anisotropy": {
+      "count": 16384,
+      "finite_fraction": 1.0,
+      "min": 0.016394216262205687,
+      "median": 0.5859949480400982,
+      "mean": 0.5724282741348592,
+      "max": 0.9658879291708432,
+      "std": 0.15619812063658542,
+      "file": "anisotropy.tif",
+      "shape": [
+        128,
+        128
+      ]
+    },
+    "dop": {
+      "count": 16384,
+      "finite_fraction": 1.0,
+      "min": 0.3665900006859911,
+      "median": 0.8416017580552142,
+      "mean": 0.827223072101226,
+      "max": 0.9999591426588501,
+      "std": 0.09134685755694713,
+      "file": "dop.tif",
+      "shape": [
+        128,
+        128
+      ]
+    },
+    "rvi": {
+      "count": 16384,
+      "finite_fraction": 1.0,
+      "min": 0.014929827313741161,
+      "median": 0.390417493505639,
+      "mean": 0.42015936511156715,
+      "max": 2.57996634248214,
+      "std": 0.19075164427737787,
+      "file": "rvi.tif",
+      "shape": [
+        128,
+        128
+      ]
+    },
+    "prvi": {
+      "count": 16384,
+      "finite_fraction": 1.0,
+      "min": 1.331975521281408e-06,
+      "median": 0.004286241022098864,
+      "mean": 0.00604715394310249,
+      "max": 0.07097362618389208,
+      "std": 0.005984222682296604,
+      "file": "prvi.tif",
+      "shape": [
+        128,
+        128
+      ]
+    },
+    "pauli_odd": {
+      "count": 16384,
+      "finite_fraction": 1.0,
+      "min": 0.006235599517822264,
+      "median": 0.235541820526123,
+      "mean": 0.26337353757720905,
+      "max": 9.158312320709227,
+      "std": 0.21573212647236611,
+      "file": "pauli_odd.tif",
+      "shape": [
+        128,
+        128
+      ]
+    },
+    "pauli_double": {
+      "count": 16384,
+      "finite_fraction": 1.0,
+      "min": 0.007042080163955688,
+      "median": 0.28236377239227295,
+      "mean": 0.31940059107851937,
+      "max": 11.031890869140621,
+      "std": 0.2828371553338062,
+      "file": "pauli_double.tif",
+      "shape": [
+        128,
+        128
+      ]
+    },
+    "pauli_cross": {
+      "count": 16384,
+      "finite_fraction": 1.0,
+      "min": 0.0021192729473114014,
+      "median": 0.058768719434738145,
+      "mean": 0.06441006641766056,
+      "max": 2.0476360321044917,
+      "std": 0.049166650917152326,
+      "file": "pauli_cross.tif",
+      "shape": [
+        128,
+        128
+      ]
+    },
+    "shannon_i": {
+      "count": 16384,
+      "finite_fraction": 1.0,
+      "min": -8.38692045490937,
+      "median": 1.671883246301253,
+      "mean": 1.2276970620095133,
+      "max": 12.037285511350943,
+      "std": 2.0957321876332933,
+      "file": "shannon_i.tif",
+      "shape": [
+        128,
+        128
+      ]
+    },
+    "shannon_p": {
+      "count": 16384,
+      "finite_fraction": 1.0,
+      "min": -9.412297291212365,
+      "median": -1.2320071851065992,
+      "mean": -1.3207790092531713,
+      "max": -0.14431877186380462,
+      "std": 0.6089375437286527,
+      "file": "shannon_p.tif",
+      "shape": [
+        128,
+        128
+      ]
+    },
+    "reciprocity_residual": {
+      "count": 16384,
+      "finite_fraction": 1.0,
+      "min": 0.3800994408175633,
+      "median": 1.171637871076646,
+      "mean": 1.1637399359360887,
+      "max": 1.6070708289521314,
+      "std": 0.11329119209844128,
+      "file": "reciprocity_residual.tif",
+      "shape": [
+        128,
+        128
+      ]
+    }
+  },
+  "skipped": []
+}
