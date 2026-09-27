@@ -321,12 +321,14 @@ arising from its use. pyNISAR is not an official NASA or ISRO software product.
 **GNU General Public License v3.0 only (GPL-3.0-only)**, matching PyGeoObserver.
 See [LICENSE](LICENSE) for the terms and [provenance](docs/PROVENANCE.md) for credits.
 
-## Geographic reach
+## Visitor map
 
-<img src="docs/visitor-map.svg" alt="World map: country and continent traffic data are unavailable" width="100%">
+<a href="https://mapmyvisitors.com/web/1c8hr" title="Open pyNISAR visitor statistics"><img src="https://mapmyvisitors.com/map.png?d=UlM_gh6v465FM660XfpiYiacAyu3LsJfKbrNqBiN-qw&amp;cl=ffffff" alt="pyNISAR MapMyVisitors map" width="100%"></a>
 
-GitHub does not provide country/continent visitor or download statistics.
-External image counters are not reliable geographic trackers on GitHub because
-images are proxied. The map therefore shows **no inferred locations**.
-[Current repository traffic](https://github.com/Cesarito2021/pyNISAR/graphs/traffic) ·
-[Recorded totals and limitations](docs/TRAFFIC.md).
+[MapMyVisitors country statistics](https://mapmyvisitors.com/web/1c8hr) ·
+[GitHub views and clones](https://github.com/Cesarito2021/pyNISAR/graphs/traffic)
+
+The widget records requests it receives. GitHub proxies and caches README images,
+so its country locations and totals are **not a reliable count of GitHub readers**
+and may reflect proxy servers. These are not software or NISAR download counts.
+[How these statistics work](docs/TRAFFIC.md).
