@@ -6,6 +6,19 @@ The source checkout was left unchanged. Namespace and branding were updated;
 the packaging, sample loader, discovery interface and command line are new.
 The retained source license is GPL-3.0-only.
 
+## Acknowledgment logos
+
+The README footer reuses the four unchanged acknowledgment images and their
+layout from [ALSdownloadeR](https://github.com/Cesarito2021/als_downloader):
+`docs/images/acknowledgements/openforest4d.png`, `nsf.jpg`,
+`university-of-florida.jpg`, and `silva-lab.png`. They identify OpenForest4D,
+the U.S. National Science Foundation, the University of Florida, and Silva Lab.
+The logos remain the property of their respective owners; the software's GPL
+license does not grant trademark rights or imply institutional endorsement.
+Funding statements are those recorded for pyNISAR, not copied from ALSdownloadeR.
+
+## NISAR examples
+
 The six README figures and two bundled covariance/intensity subsets are existing
 measured NISAR examples from the western Great Lakes, acquired 6 November 2025.
 They are not observations from the manuscript's Amazonâ€“Cerrado study area.

@@ -348,3 +348,15 @@ GitHub does not provide lifetime unique visitors or visitor countries.
 Clones are not a complete download count. Files explicitly uploaded to GitHub
 Releases have separate download counters; source ZIP downloads and library
 installs are not included. [Details](docs/TRAFFIC.md).
+
+<table>
+<tr>
+<td align="center" width="20%"><img src="docs/images/acknowledgements/openforest4d.png" alt="OpenForest4D" width="115"></td>
+<td align="center" width="20%"><img src="docs/images/acknowledgements/nsf.jpg" alt="U.S. National Science Foundation" width="130"></td>
+<td align="center" width="40%"><img src="docs/images/acknowledgements/university-of-florida.jpg" alt="University of Florida" width="280"></td>
+<td align="center" width="20%"><img src="docs/images/acknowledgements/silva-lab.png" alt="Silva Lab" width="120"></td>
+</tr>
+</table>
+
+Logos identify acknowledged organizations and affiliations; they remain the
+property of their respective owners and do not imply endorsement of pyNISAR.
