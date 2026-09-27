@@ -17,3 +17,6 @@ def test_example_figures_and_navigation():
     assert not app.exception
     app.sidebar.radio[0].set_value('Find observations').run()
     assert not app.exception
+    app.sidebar.radio[1].set_value('GeoJSON / GeoPackage').run()
+    assert not app.exception
+    assert app.button[-1].disabled

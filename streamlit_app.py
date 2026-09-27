@@ -27,7 +27,7 @@ workspace = Path(st.session_state.workspace.name)
 
 with st.sidebar:
     st.title('pyNISAR')
-    st.caption('L-BAND RADAR EXPLORER')
+    st.caption('LOCAL L-BAND RADAR EXPLORER')
     page = st.radio('Workspace', ['Explore & generate', 'Find observations', 'Figures', 'About & cite'])
     st.divider()
     st.caption('GSLC · GCOV · RSLC\n\nResearch alpha · 0.1.0a1')
@@ -133,8 +133,11 @@ if page == 'Explore & generate':
 
 elif page == 'Find observations':
     st.title('Find NISAR observations')
-    st.write('Search NASA Earthdata collections by date and bounding box. Downloads and authenticated processing run in your own Python session.')
+    st.write('Choose a box or polygon file, then search NISAR scenes by date. Search needs no NASA login. Downloads need your Earthdata account and space on your computer.')
     from pynisar.discovery import collections, search
+    from pynisar.aoi import read_aoi
+    area_frame, area_path, area_layer = None, None, None
+    area_valid = True
     with st.sidebar:
         if st.button('Load NASA collections'):
             try:
@@ -143,21 +146,55 @@ elif page == 'Find observations':
                 st.error('NASA collection discovery is unavailable. Please try again later.')
         items = st.session_state.get('collections', [])
         selected = st.selectbox('Collection', items, format_func=lambda x:x['short_name']+' · '+x['version']) if items else None
-        west = st.number_input('West longitude', -180.,180.,-90.3)
-        east = st.number_input('East longitude', -180.,180.,-90.1)
-        south = st.number_input('South latitude', -90.,90.,46.35)
-        north = st.number_input('North latitude', -90.,90.,46.55)
+        area_input = st.radio('Study area', ['Bounding box', 'GeoJSON / GeoPackage'])
+        west, south, east, north = -90.3, 46.35, -90.1, 46.55
+        if area_input == 'Bounding box':
+            west = st.number_input('West longitude', -180.,180.,-90.3)
+            east = st.number_input('East longitude', -180.,180.,-90.1)
+            south = st.number_input('South latitude', -90.,90.,46.35)
+            north = st.number_input('North latitude', -90.,90.,46.55)
+            area_valid = west < east and south < north
+            if not area_valid:
+                st.error('West must be smaller than east; south must be smaller than north.')
+        else:
+            area_upload = st.file_uploader('Polygon boundary', type=['geojson','json','gpkg'])
+            area_valid = False
+            if area_upload is not None:
+                import hashlib
+                area_path = workspace/(hashlib.sha256(area_upload.getbuffer()).hexdigest()+Path(area_upload.name).suffix.lower())
+                if not area_path.exists():
+                    area_path.write_bytes(area_upload.getbuffer())
+                try:
+                    if area_path.suffix == '.gpkg':
+                        import geopandas as gpd
+                        layers = gpd.list_layers(area_path)['name'].tolist()
+                        area_layer = st.selectbox('GeoPackage layer', layers)
+                    area_frame = read_aoi(area_path, layer=area_layer)
+                    west, south, east, north = area_frame.total_bounds.tolist()
+                    area_valid = True
+                    st.caption('Polygons transformed to WGS84. Search results are filtered to their actual boundaries.')
+                except Exception as exc:
+                    st.error('Cannot read this AOI: '+str(exc))
         start = st.date_input('From', date(2025,11,1)); end = st.date_input('To', date(2025,11,10))
-        requested = dict(bbox=[west,south,east,north], start=str(start), end=str(end), concept_id=selected['concept_id'] if selected else None)
-        if st.button('Search observations', disabled=not bool(selected)):
+        candidate_limit = st.selectbox('Maximum candidate scenes', [20,50,100])
+        requested = dict(start=str(start), end=str(end), count=candidate_limit, concept_id=selected['concept_id'] if selected else None)
+        if area_input == 'Bounding box':
+            requested['bbox'] = [west,south,east,north]
+        else:
+            requested.update(aoi=str(area_path) if area_path else None, layer=area_layer)
+        if st.button('Search observations', disabled=not (selected and area_valid)):
             try:
                 st.session_state.search_result = (requested, search(**requested))
             except Exception as exc:
                 st.error('Search failed: '+str(exc))
     import folium
     map_ = folium.Map(location=[(south+north)/2,(west+east)/2], zoom_start=7, tiles='OpenStreetMap')
-    if west < east and south < north:
-        folium.Rectangle([[south,west],[north,east]], color='#12796f', fill=False).add_to(map_)
+    if area_valid:
+        if area_frame is not None:
+            folium.GeoJson(json.loads(area_frame.to_json()), name='Study area',
+                style_function=lambda _:dict(color='#12796f',weight=3,fillOpacity=0.06)).add_to(map_)
+        else:
+            folium.Rectangle([[south,west],[north,east]], color='#12796f', fill=False).add_to(map_)
         map_.fit_bounds([[south,west],[north,east]])
     saved = st.session_state.get('search_result')
     rows = []
@@ -168,15 +205,21 @@ elif page == 'Find observations':
             except (AttributeError, ValueError, TypeError):
                 pass
             rows.append({'Name':granule['umm'].get('GranuleUR',''), 'ID':granule['meta']['concept-id']})
-        st.caption(f'{len(rows)} results · maximum 20; narrow the search if the limit is reached.')
+        st.caption(f'{len(rows)} matching scenes from {saved[1].candidate_count} candidates.')
+        if saved[1].limit_reached:
+            st.warning('Candidate limit reached. Narrow the area/dates or increase the limit; coverage may be incomplete.')
+        if saved[1].omitted_footprints:
+            st.warning(f'{saved[1].omitted_footprints} candidates had no usable footprint and were omitted.')
     components.html(map_.get_root().render(), height=560)
     if rows:
         st.dataframe(rows, use_container_width=True)
-    if selected:
+    st.caption('The AOI selects intersecting scenes; it does not clip the downloaded HDF5 files. Keep enough disk space for the selected files and outputs. No separate cloud-storage account is needed.')
+    if selected and area_valid:
+        spatial_code = f'bbox={(west,south,east,north)!r}' if area_input == 'Bounding box' else f'aoi={area_upload.name!r}' + (f', layer={area_layer!r}' if area_layer else '')
         st.code(f'''from pynisar.discovery import search
 import earthaccess
-granules = search({selected['concept_id']!r}, bbox={(west,south,east,north)!r},
-                  start={str(start)!r}, end={str(end)!r})
+granules = search({selected['concept_id']!r}, {spatial_code},
+                  start={str(start)!r}, end={str(end)!r}, count={candidate_limit})
 earthaccess.login(persist=False)
 # Select the specific granule(s) to download before calling:
 # earthaccess.download([granules[0]], local_path="data")''', language='python')

@@ -1,6 +1,16 @@
 """Bounded NISAR discovery; Earthdata credentials stay with the caller."""
 from datetime import date
 import math
+import warnings
+
+
+class SearchResults(list):
+    """Granules plus the candidate limit and missing-footprint count."""
+    def __init__(self, granules, *, candidate_count, limit, omitted_footprints=0):
+        super().__init__(granules)
+        self.candidate_count = candidate_count
+        self.limit_reached = candidate_count >= limit
+        self.omitted_footprints = omitted_footprints
 
 
 def collections(*, client=None):
@@ -12,8 +22,24 @@ def collections(*, client=None):
             for d in datasets if 'NISAR' in d['umm']['ShortName'].upper()]
 
 
-def search(concept_id, *, bbox, start, end, count=20, client=None):
-    """Return earthaccess granules from a verified NISAR collection and WGS84 bbox."""
+def search(concept_id, *, start, end, bbox=None, aoi=None, layer=None, count=20, client=None):
+    """Find NISAR granules using a WGS84 box or polygon AOI.
+
+    File AOIs query their bounding box, then intersect returned footprints with
+    the exact polygon union (including holes). count limits candidates before
+    polygon filtering; a limited query is not a complete inventory. Search
+    selects whole granules, not a clipped HDF5 download or pixel mask.
+    """
+    if (bbox is None) == (aoi is None):
+        raise ValueError('Provide exactly one of bbox or aoi.')
+    boundary = None
+    if aoi is not None:
+        from .aoi import read_aoi
+        frame = read_aoi(aoi, layer=layer)
+        boundary = frame.geometry.union_all()
+        bbox = frame.total_bounds.tolist()
+    elif layer is not None:
+        raise ValueError('layer applies only with a GeoPackage AOI.')
     if len(bbox) != 4 or not all(math.isfinite(v) for v in bbox):
         raise ValueError('bbox must contain four finite WGS84 coordinates.')
     west, south, east, north = bbox
@@ -27,5 +53,26 @@ def search(concept_id, *, bbox, start, end, count=20, client=None):
         import earthaccess as client
     if concept_id not in {d['concept_id'] for d in collections(client=client)}:
         raise ValueError('Select a NISAR collection returned by collections().')
-    return client.search_data(concept_id=concept_id, bounding_box=tuple(bbox),
-                              temporal=(str(start), str(end)), count=count)
+    candidates = client.search_data(concept_id=concept_id, bounding_box=tuple(bbox),
+                                    temporal=(str(start), str(end)), count=count)
+    matches, omitted = [], 0
+    if boundary is None:
+        matches = candidates
+    else:
+        from shapely.geometry import shape
+        for granule in candidates:
+            try:
+                geo = granule.__geo_interface__
+                footprint = shape(geo['geometry'] if geo.get('type') == 'Feature' else geo)
+                if footprint.is_empty or not footprint.is_valid or footprint.geom_type not in ('Polygon','MultiPolygon'):
+                    raise ValueError('Unusable granule footprint.')
+                if footprint.intersects(boundary):
+                    matches.append(granule)
+            except (ValueError, TypeError, KeyError, AttributeError):
+                omitted += 1
+    result = SearchResults(matches, candidate_count=len(candidates), limit=count, omitted_footprints=omitted)
+    if result.limit_reached:
+        warnings.warn('Candidate limit reached; narrow the area/dates or increase count. Results may be incomplete.', UserWarning)
+    if omitted:
+        warnings.warn(f'{omitted} candidates omitted because their footprints could not be verified.', UserWarning)
+    return result
