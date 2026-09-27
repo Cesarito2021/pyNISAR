@@ -1,45 +1,29 @@
-# Repository reach
+# Repository statistics
 
-Snapshot: 2026-09-27T18:55:37.337439+00:00 (UTC), from GitHub's authenticated traffic API.
-These are the rolling 14-day repository counts, not lifetime usage or downloads:
+Use [GitHub Insights / Traffic](https://github.com/Cesarito2021/pyNISAR/graphs/traffic)
+to see views, unique visitors, and clones for the last 14 days. GitHub updates
+these statistics itself; no local computer, AI agent, or library telemetry is needed.
 
-| Measure | Total | Unique |
-|---|---:|---:|
-| Views | 0 | 0 |
-| Clones | 0 | 0 |
-| Downloads | Not available | Not available |
-| Countries / continents | Not available | Not available |
+GitHub does not expose lifetime unique visitors, viewer identities, or countries.
+Daily unique counts cannot be added to obtain lifetime distinct people.
 
-The source ZIP badge is a download link, not an installation counter. A clone is
-not a download of a NISAR scene. This snapshot does not update automatically.
-[Live traffic](https://github.com/Cesarito2021/pyNISAR/graphs/traffic) requires the
-appropriate repository permissions. The Python library collects no telemetry. The README now embeds the owner-requested MapMyVisitors image counter.
+Files explicitly uploaded as GitHub Release assets have cumulative download
+counts for each asset. These count downloads, not distinct people, and exclude
+automatically generated source archives, ordinary source ZIP downloads, and
+package installs. Clones are a separate metric, not a full download counter.
+No release or public publication was created for this change.
 
-GitHub's [traffic API](https://docs.github.com/en/rest/metrics/traffic) supplies
-views and clones, not visitor countries. GitHub's
-[Camo image proxy](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-anonymized-urls)
-hides browser information and caches images, so a third-party README image beacon
-cannot be presented as an accurate visitor-geography or download counter.
+The local Codex collection task and its README counter were removed at the
+owner's request. The MapMyVisitors embed was also removed because GitHub's image
+proxy prevents reliable measurement of reader locations and counts. Historical
+snapshot files are not live counters. No collection schedule is currently active.
 
-A future external website could collect its own consented analytics and render
-an aggregate country map, but that would measure visitors to that website,
-not everyone who viewed this private GitHub repository. The README image counter is installed, but no separate website or JavaScript tracker was created.
+It is technically possible to archive daily view/clone totals with a scheduled
+GitHub Actions workflow running on GitHub. That requires traffic API credentials
+and maintenance; it still cannot recover lifetime unique people. No such
+workflow or new credential has been configured here.
 
-Map boundaries: [Natural Earth](https://www.naturalearthdata.com/about/terms-of-use/),
-1:110m admin-0 countries, public domain. All countries share the same neutral
-fill because country data are unavailable; this does not mean zero visitors.
-
-## MapMyVisitors widget
-
-Configured on 27 September 2026 for `https://github.com/Cesarito2021/pyNISAR`.
-The provider supplied the plain-image embed used at the end of the README:
-[public statistics](https://mapmyvisitors.com/web/1c8hr).
-The owner can manage it through their MapMyVisitors account. No repository
-visibility or source-code access was granted to the provider.
-
-The displayed total counts requests seen by the provider; it does not establish
-how many individual people read this GitHub repository. GitHub's image proxy
-and cache obscure or suppress direct visitor requests, so geography can reflect
-proxy infrastructure. It cannot recover historical countries or count library
-installs, source ZIP downloads, or NASA file downloads. The former neutral map
-asset is no longer displayed in the README.
+Sources:
+- [GitHub traffic](https://docs.github.com/en/repositories/viewing-activity-and-data-for-your-repository/viewing-traffic-to-a-repository)
+- [Release asset download counts](https://docs.github.com/en/rest/releases/assets)
+- [Scheduled workflows](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule)
