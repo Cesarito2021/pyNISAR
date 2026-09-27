@@ -1,4 +1,3 @@
-include streamlit_app.py requirements.txt CITATION.cff Start-pyNISAR.ps1
+include CITATION.cff
 recursive-include docs *.md *.svg *.png *.json
 recursive-include examples *.py *.ipynb
-include .streamlit/config.toml

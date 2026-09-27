@@ -11,7 +11,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
-      - run: pip install '.[app,dev]'
+      - run: pip install '.[plot,discovery,dev]'
       - run: pytest -q
       - run: python -m build
       - run: python -m twine check dist/*

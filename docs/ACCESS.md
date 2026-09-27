@@ -12,8 +12,7 @@
 GeoPackage coordinates are transformed to WGS84 automatically. Choose a layer
 explicitly if a GeoPackage contains more than one. Empty/invalid geometries,
 point layers and ambiguous CRS are rejected. Split an AOI crossing the antimeridian
-before searching. The local app accepts files or manually entered box coordinates;
-it does not yet support drawing a rectangle on the map.
+before searching. Use polygon files or WGS84 box coordinates in Python.
 
 For polygons, the library queries NASA CMR using the enclosing box, then keeps
 only candidate footprints that intersect the actual polygon union, including
@@ -50,8 +49,7 @@ auth = earthaccess.login(persist=False)
 `persist=False` avoids saving credentials through this call. Earthaccess can also
 use existing environment credentials or a previously configured `.netrc`.
 Never put passwords in the README, notebooks, GitHub files or exported scripts.
-The local app searches and prepares example Python code; it does not log in to
-NASA or download complete mission files itself.
+The notebooks authenticate in your own Python session.
 
 See [Earthaccess authentication](https://earthaccess.readthedocs.io/en/latest/user/explanation/authenticate/)
 and [data access](https://earthaccess.readthedocs.io/en/stable/user/explanation/access/).
@@ -81,7 +79,6 @@ The original `process()` remains a small-window workflow: GSLC/GCOV can use
 `center=(longitude, latitude)`; RSLC uses `pixel=(row, column)` and remains in radar
 coordinates. Geographic AOI masks require geocoded GSLC/GCOV products.
 
-The app runs locally and uses temporary session folders. Save its ZIP download
-to keep results. The Python API writes to the output folder you choose. Notebook
+The Python API writes to the output folder you choose. Notebook
 storage lifetime depends on the notebook service; save retained files to your
 own persistent storage before ending the session.

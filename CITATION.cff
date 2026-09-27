@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "Please cite the pyNISAR software version used. The related manuscript listed below has been submitted to Remote Sensing Applications: Society and Environment and is not yet published."
+message: "Please cite the pyNISAR software version used. The related manuscript listed below has been submitted to Remote Sensing Applications: Society and Environment and is under review, not yet published."
 type: software
 title: "pyNISAR: NISAR L-band SAR processing and polarimetry in Python"
 version: 0.1.0a1
@@ -7,7 +7,7 @@ authors:
   - family-names: Alvites
     given-names: Cesar
 license: GPL-3.0-only
-abstract: "Independent NISAR GSLC, GCOV and RSLC inspection, bounded processing, polarimetric descriptors, figures and map exploration, derived from PyGeoObserver."
+abstract: "Independent NISAR GSLC, GCOV and RSLC inspection, bounded processing, polarimetric descriptors, reproducible figures, derived from PyGeoObserver."
 keywords:
   - NISAR
   - SAR

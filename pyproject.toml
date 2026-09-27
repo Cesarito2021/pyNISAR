@@ -16,8 +16,8 @@ classifiers = ["Development Status :: 3 - Alpha", "Programming Language :: Pytho
 
 [project.optional-dependencies]
 plot = ["matplotlib>=3.8"]
+notebook = ["ipython>=8", "nbformat>=5"]
 discovery = ["earthaccess>=0.15,<1", "geopandas>=1.0"]
-app = ["streamlit>=1.40,<2", "folium>=0.19,<1", "matplotlib>=3.8", "earthaccess>=0.15,<1", "geopandas>=1.0"]
 decompositions = ["polsartools==0.11"]
 dev = ["pytest>=8", "build", "twine"]
 

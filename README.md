@@ -1,208 +1,332 @@
-<p align="center"><img src="docs/banner.svg" alt="pyNISAR — NISAR L-band SAR in Python" width="100%"></p>
+<p align="center"><img src="docs/banner.svg" alt="pyNISAR — measured HV radar, without display smoothing" width="100%"></p>
 
-**Discover NISAR scenes, process SAR data and generate polarimetric products.**
+<p align="center">
+<a href="https://www.python.org/"><img src="docs/badges/python.svg" alt="Python 3.11+"></a>
+<a href="https://book.cryointhecloud.com/"><img src="docs/badges/cryocloud.svg" alt="CryoCloud Jupyter"></a>
+<a href="LICENSE"><img src="docs/badges/license.svg" alt="GPL-3.0-only license"></a>
+<a href="https://github.com/Cesarito2021/pyNISAR/archive/refs/heads/main.zip"><img src="docs/badges/download.svg" alt="Download source ZIP"></a>
+</p>
 
-Developed by **Cesar Alvites**, using the NISAR workflow from
-[PyGeoObserver](https://github.com/Cesarito2021/pygeoobserver).
-**Research alpha · private repository · local app · GPL-3.0-only.**
+# pyNISAR: a Python library for accessing, screening, processing and downloading NASA–ISRO SAR data
 
-## Setup
+**Author:** Cesar Alvites — University of Florida, School of Forest, Fisheries, and Geomatics Sciences.
 
-Python 3.11 or newer. Install from this project folder:
+pyNISAR searches NISAR observations, inspects HDF5 products, reads or downloads
+selected data, and generates cross-polarization and polarimetric products for
+applications such as forest monitoring. This research library focuses on **L-band
+GSLC, GCOV and RSLC**, using code developed for [PyGeoObserver](https://github.com/Cesarito2021/pygeoobserver).
+
+## Configuration and account credentials
+
+| Requirement | Configuration |
+|---|---|
+| Python | 3.11 or newer; local Jupyter, Colab or CryoCloud. |
+| Source access | This repository is **private**; GitHub permission is required to download it. No PyPI release yet. |
+| NASA credentials | Your own [Earthdata Login](https://urs.earthdata.nasa.gov/) for protected reads/downloads. Search and bundled examples need no login. |
+| Study area | WGS84 box, GeoJSON or a GeoPackage polygon layer. |
+| Storage | Choose a local/notebook output folder. Whole HDF5 scenes may occupy several GB; bounded remote reads avoid saving a complete scene. |
+
+## Get started
+
+Download and extract the source ZIP, then install from its folder:
 
 ```bash
-python -m pip install ".[plot,discovery]"
+python -m pip install ".[plot,discovery,notebook]"
 ```
 
-Run this setup before either workflow. Replace the area, dates and preview center
-for your study; the center must lie within the selected scene.
+The measured examples run immediately without NASA credentials:
+
+```python
+import pynisar
+run = pynisar.process_sample("outputs", mode="dual")  # Or mode="quad".
+figures = pynisar.plot_gallery(run)
+```
+
+**Colab:** download a notebook below and the source ZIP; open the notebook in Colab.
+Its installation cell accepts the source ZIP if pyNISAR is not installed.
+**Jupyter/CryoCloud:** install from the extracted source, then open the `.ipynb`.
+[Notebook instructions](docs/NOTEBOOKS.md).
+
+## Introduction
+
+[NASA–ISRO Synthetic Aperture Radar (NISAR)](https://science.nasa.gov/mission/nisar/)
+uses L- and S-band radar to observe changes in land, vegetation, water and ice.
+Launched on 30 July 2025, it supports ecosystem monitoring and studies of surface
+change. pyNISAR currently processes the mission's **L-band** products.
+
+Data-release status, checked **27 September 2026**:
+
+- **23 January 2026:** initial pre-calibration sample products, Levels 1–3.
+- **27 February 2026:** broader **BETA** release, not fully calibrated.
+- **20 July 2026:** calibrated, partially validated **PROVISIONAL** products,
+  Levels 0–3; routine acquisitions from 17 June 2026 plus selected earlier time series.
+- **Planned for Q4 2026:** validated products and reprocessing of the science-phase
+  backlog; this remains a schedule, not a completed release.
+
+See the [NASA/ASF availability guide](https://nisar-docs.asf.alaska.edu/availability-overview/)
+for updates. Avoid treating BETA and PROVISIONAL products as interchangeable.
+
+## Input and output data
+
+| Case | Input | Products | Figures |
+|---|---|---|---|
+| Dual polarization | HH/HV or VV/VH in GSLC/GCOV/RSLC; complex cross terms needed for phase descriptors | Measured powers, intensity ratios, supported H, α, DoP and related descriptors; GeoTIFF, CSV, manifest | Power maps and H–α density |
+| Quad polarization | Measured HH/HV/VH/VV and complete complex covariance; explicit reciprocity assumption | Supported 18-layer profile, including H, A, α, span and Pauli powers; GeoTIFF, CSV, manifest | Power maps and H–A–α diagram |
+
+Missing phase information is never reconstructed from intensity alone. RSLC
+remains in radar geometry. Small-window runs also save covariance; chunked runs
+avoid this extra storage. [Product definitions](docs/POLARIMETRY.md).
+
+## Dual-polarization case
+
+[![Open in Colab](docs/badges/colab.svg)](https://colab.research.google.com/github/Cesarito2021/pyNISAR/blob/main/examples/pyNISAR_dual.ipynb) [![Download Jupyter notebook](docs/badges/jupyter.svg)](https://github.com/Cesarito2021/pyNISAR/raw/refs/heads/main/examples/pyNISAR_dual.ipynb)
+
+Run steps in order. **`LIVE=False` reproduces the measured bundled subset**;
+`LIVE=True` enables NASA access. The full notebook includes whole-HDF5 download
+and alternative-AOI options. Private Colab links require repository access; if
+Colab cannot open the link, download the notebook and use **File → Upload notebook**.
+
+**Step 1 — Import libraries.**
 
 ```python
 from pathlib import Path
 import earthaccess
 import pynisar
 from pynisar.discovery import collections, search
+from IPython.display import display, HTML
+import base64
+```
 
-area = {"bbox": (-90.3, 46.35, -90.1, 46.55)}
+**Step 2 — Define the study area.**
+
+```python
+LIVE = False  # False: bundled measured data; True: NASA search and processing.
+area = {"bbox": (-90.215, 46.435, -90.185, 46.465)}
 # Or: area = {"aoi": "study_area.geojson"}
 # Or: area = {"aoi": "study_area.gpkg", "layer": "boundary"}
-dates = {"start": "2025-11-01", "end": "2025-11-10"}
-center = (-90.2, 46.45)  # Longitude, latitude for a small figure preview.
-scope = "aoi"           # "aoi" or "tile": extent of the saved products.
+dates = {"start": "2025-11-06", "end": "2025-11-07"}
+if "aoi" in area:
+    from pynisar.aoi import read_aoi
+    point = read_aoi(area["aoi"], layer=area.get("layer")).geometry.union_all().representative_point()
+    center = (point.x, point.y)
+else:
+    w, s, e, n = area["bbox"]
+    center = ((w + e) / 2, (s + n) / 2)
 ```
 
-| Access and storage | What you need |
-|---|---|
-| Search / bundled examples | No NASA credentials. |
-| Protected downloads | Your own [Earthdata Login](https://urs.earthdata.nasa.gov/). |
-| Storage | A local/notebook folder; no cloud-storage account required. HDF5 scenes can be several GB. |
-| AOI | Selects scenes for download; `scope="aoi"` clips derived products. Downloads remain whole files. |
-
-Choose a collection/version and scene explicitly in the steps below. A collection
-does not guarantee a scene's polarizations; inspect the downloaded file.
-[Access details](docs/ACCESS.md).
-
-## Dual polarization · HH/HV
-
-**Step 1 — Discover GSLC scenes.** Select the collection ID and scene index from
-the listed metadata. This example uses measured HH/HV channels.
+**Step 3 — Sign in to Earthdata.**
 
 ```python
-print([c for c in collections() if "GSLC" in c["short_name"]])
-scenes = search(input("GSLC concept_id: ").strip(), **area, **dates, count=20)
-print([(i, s["umm"]["GranuleUR"]) for i, s in enumerate(scenes)])
-scene = scenes[int(input("Scene index: "))]
+if LIVE:
+    auth = earthaccess.login(persist=False)
+    if not auth.authenticated:
+        raise RuntimeError("Sign in with your own NASA Earthdata account.")
 ```
 
-**Step 2 — Download and inspect.** Confirm that frequency A contains HH and HV.
+**Step 4 — Search NISAR.**
 
 ```python
-earthaccess.login(persist=False)
-files = earthaccess.download([scene], local_path="data/dual")
-source = next(Path(p) for p in files if Path(p).suffix.lower() in (".h5", ".hdf5"))
-print(pynisar.inspect(source))
+if LIVE:
+    choices = [c for c in collections() if "GSLC" in c["short_name"] and "PROVISIONAL" in c["short_name"]]
+    if not choices:
+        raise RuntimeError("No provisional GSLC collection found. Inspect collections().")
+    scenes = search(choices[0]["concept_id"], **area, **dates, count=50)
+    reference = Path(pynisar.sample("dual").info["source"]).stem
+    scene = next((s for s in scenes if reference in s["umm"]["GranuleUR"]), None)
+    if scene is None:
+        candidates = [s for s in scenes if "_QP" in s["umm"]["GranuleUR"]]
+        if not candidates:
+            raise RuntimeError("No candidate quad acquisition found. Change the AOI/dates or inspect scenes for another polarization.")
+        scene = candidates[0]
+    print(scene["umm"]["GranuleUR"])
 ```
 
-**Step 3 — Set looks and generate products.** Write AOI-only or entire-tile
-GeoTIFFs in chunks. Keep the HDF5 for the figure preview in Step 4.
+**Step 5 — Generate polarimetric products.**
 
 ```python
-settings = {"frequency": "A", "channels": ["HH", "HV"], "looks": (4, 2)}
-products = pynisar.process_tile(
-    source, "outputs/dual", **settings, **area, scope=scope,
-    chunk_size=256, delete_source=False,
-)
+settings = {"channels": ['HH', 'HV'], "looks": (4, 2)}
+if LIVE:
+    url = next(u for u in scene.data_links() if u.split("?")[0].endswith(".h5"))
+    with pynisar.open_remote(url, max_mb=256) as source:
+        run = pynisar.process(source, "outputs/dual", **settings,
+                             center=center, window_size=256)
+else:
+    run = pynisar.process_sample("outputs/dual", mode="dual")
 ```
 
-**Step 4 — Generate the figures.** Create a bounded preview from the same scene,
-then save the product panels and dual-pol H–α density as PNG/SVG.
+**Step 6 — Plot the results.**
 
 ```python
-preview = pynisar.process(source, "figures/dual", **settings,
-                         center=center, window_size=256)
-pynisar.plot(preview, metrics=["HH", "HV", "entropy", "alpha"])
-pynisar.plot_halpha(preview)
+figures = pynisar.plot_gallery(run)
+images = "".join('<img style="width:32%;vertical-align:top" src="data:image/png;base64,'
+                 + base64.b64encode(p.read_bytes()).decode() + '">' for p in figures)
+display(HTML(images))
 ```
 
-To try Step 4 **without downloading**, replace its first call with
-`preview = pynisar.process_sample("figures/dual", mode="dual")`.
-
-Measured example: HH/HV from a quad GSLC acquisition; uncorrected mean |S|² in dB,
-with H–α in the dual C2 basis.
+**Measured result:** HH/HV selected from a quad GSLC acquisition, 6 November
+2025, western Great Lakes. Power is uncorrected mean |S|²; H–α uses the dual C2 basis.
 
 <table><tr>
-<td width="33%" align="center"><strong>HH</strong><br><img src="docs/figures/panels/dual_hh.png" alt="Measured dual HH power" width="100%"></td>
-<td width="33%" align="center"><strong>HV</strong><br><img src="docs/figures/panels/dual_hv.png" alt="Measured dual HV power" width="100%"></td>
-<td width="33%" align="center"><strong>H–α · 2D</strong><br><img src="docs/figures/panels/dual_halpha.png" alt="Dual H–alpha density" width="100%"></td>
+<td width="33%" align="center"><strong>HH</strong><br><img src="docs/figures/panels/dual_hh.png" alt="dual HH" width="100%"></td>
+<td width="33%" align="center"><strong>HV</strong><br><img src="docs/figures/panels/dual_hv.png" alt="dual HV" width="100%"></td>
+<td width="33%" align="center"><strong>H–α · 2D</strong><br><img src="docs/figures/panels/dual_halpha.png" alt="dual H–α · 2D" width="100%"></td>
 </tr></table>
 
-## Quad polarization · HH/HV/VH/VV
+## Quad-polarization case
 
-**Step 1 — Discover GCOV scenes.** Select a collection and a scene with all four
-channels and complex covariance terms.
+[![Open in Colab](docs/badges/colab.svg)](https://colab.research.google.com/github/Cesarito2021/pyNISAR/blob/main/examples/pyNISAR_quad.ipynb) [![Download Jupyter notebook](docs/badges/jupyter.svg)](https://github.com/Cesarito2021/pyNISAR/raw/refs/heads/main/examples/pyNISAR_quad.ipynb)
 
-```python
-print([c for c in collections() if "GCOV" in c["short_name"]])
-scenes = search(input("GCOV concept_id: ").strip(), **area, **dates, count=20)
-print([(i, s["umm"]["GranuleUR"]) for i, s in enumerate(scenes)])
-scene = scenes[int(input("Scene index: "))]
-```
+Run steps in order. **`LIVE=False` reproduces the measured bundled subset**;
+`LIVE=True` enables NASA access. The full notebook includes whole-HDF5 download
+and alternative-AOI options. Private Colab links require repository access; if
+Colab cannot open the link, download the notebook and use **File → Upload notebook**.
 
-**Step 2 — Download and inspect.** Missing complex cross terms cannot support the
-full quad-pol descriptor set; processing checks their availability.
+**Step 1 — Import libraries.**
 
 ```python
-earthaccess.login(persist=False)
-files = earthaccess.download([scene], local_path="data/quad")
-source = next(Path(p) for p in files if Path(p).suffix.lower() in (".h5", ".hdf5"))
-print(pynisar.inspect(source))
+from pathlib import Path
+import earthaccess
+import pynisar
+from pynisar.discovery import collections, search
+from IPython.display import display, HTML
+import base64
 ```
 
-**Step 3 — Set looks and generate products.** Explicitly assume reciprocity to
-form C3/Pauli T3 and calculate the supported 18-layer quad-pol profile.
+**Step 2 — Define the study area.**
 
 ```python
-settings = {"frequency": "A", "channels": ["HH", "HV", "VH", "VV"],
-            "looks": (1, 1), "reciprocal": True}
-products = pynisar.process_tile(
-    source, "outputs/quad", **settings, **area, scope=scope,
-    chunk_size=256, delete_source=False,
-)
+LIVE = False  # False: bundled measured data; True: NASA search and processing.
+area = {"bbox": (-90.215, 46.435, -90.185, 46.465)}
+# Or: area = {"aoi": "study_area.geojson"}
+# Or: area = {"aoi": "study_area.gpkg", "layer": "boundary"}
+dates = {"start": "2025-11-06", "end": "2025-11-07"}
+if "aoi" in area:
+    from pynisar.aoi import read_aoi
+    point = read_aoi(area["aoi"], layer=area.get("layer")).geometry.union_all().representative_point()
+    center = (point.x, point.y)
+else:
+    w, s, e, n = area["bbox"]
+    center = ((w + e) / 2, (s + n) / 2)
 ```
 
-**Step 4 — Generate the figures.** Save power/descriptor panels and the quad-pol
-H–A–α diagram from a bounded preview of the same scene.
+**Step 3 — Sign in to Earthdata.**
 
 ```python
-preview = pynisar.process(source, "figures/quad", **settings,
-                         center=center, window_size=128)
-pynisar.plot(preview, metrics=["HH", "HV", "VH", "VV"])
-pynisar.plot_haalpha(preview)
+if LIVE:
+    auth = earthaccess.login(persist=False)
+    if not auth.authenticated:
+        raise RuntimeError("Sign in with your own NASA Earthdata account.")
 ```
 
-To try Step 4 **without downloading**, replace its first call with
-`preview = pynisar.process_sample("figures/quad", mode="quad")`.
+**Step 4 — Search NISAR.**
 
-Measured example: GCOV power as stored (nominal γ⁰), with H–A–α from reciprocal
-Pauli T3. These examples show the bundled observations, not an arbitrary search result.
+```python
+if LIVE:
+    choices = [c for c in collections() if "GCOV" in c["short_name"] and "PROVISIONAL" in c["short_name"]]
+    if not choices:
+        raise RuntimeError("No provisional GCOV collection found. Inspect collections().")
+    scenes = search(choices[0]["concept_id"], **area, **dates, count=50)
+    reference = Path(pynisar.sample("quad").info["source"]).stem
+    scene = next((s for s in scenes if reference in s["umm"]["GranuleUR"]), None)
+    if scene is None:
+        candidates = [s for s in scenes if "_QP" in s["umm"]["GranuleUR"]]
+        if not candidates:
+            raise RuntimeError("No candidate quad acquisition found. Change the AOI/dates or inspect scenes for another polarization.")
+        scene = candidates[0]
+    print(scene["umm"]["GranuleUR"])
+```
+
+**Step 5 — Generate polarimetric products.**
+
+```python
+settings = {"channels": ['HH', 'HV', 'VH', 'VV'], "looks": (1, 1)}
+settings["reciprocal"] = True
+if LIVE:
+    url = next(u for u in scene.data_links() if u.split("?")[0].endswith(".h5"))
+    with pynisar.open_remote(url, max_mb=256) as source:
+        run = pynisar.process(source, "outputs/quad", **settings,
+                             center=center, window_size=128)
+else:
+    run = pynisar.process_sample("outputs/quad", mode="quad")
+```
+
+**Step 6 — Plot the results.**
+
+```python
+figures = pynisar.plot_gallery(run)
+images = "".join('<img style="width:32%;vertical-align:top" src="data:image/png;base64,'
+                 + base64.b64encode(p.read_bytes()).decode() + '">' for p in figures)
+display(HTML(images))
+```
+
+**Measured result:** four-channel GCOV from the same Great Lakes acquisition.
+Power is used as stored (nominal γ⁰); H–A–α uses reciprocal Pauli T3.
+These examples are separate from the manuscript’s Amazon–Cerrado study area.
 
 <table><tr>
-<td width="33%" align="center"><strong>HH</strong><br><img src="docs/figures/panels/quad_hh.png" alt="Measured quad HH power" width="100%"></td>
-<td width="33%" align="center"><strong>HV</strong><br><img src="docs/figures/panels/quad_hv.png" alt="Measured quad HV power" width="100%"></td>
-<td width="33%" align="center"><strong>H–A–α · 3D</strong><br><img src="docs/figures/panels/quad_haalpha.png" alt="Quad H–A–alpha diagram" width="100%"></td>
+<td width="33%" align="center"><strong>HH</strong><br><img src="docs/figures/panels/quad_hh.png" alt="quad HH" width="100%"></td>
+<td width="33%" align="center"><strong>HV</strong><br><img src="docs/figures/panels/quad_hv.png" alt="quad HV" width="100%"></td>
+<td width="33%" align="center"><strong>H–A–α · 3D</strong><br><img src="docs/figures/panels/quad_haalpha.png" alt="quad H–A–α · 3D" width="100%"></td>
 </tr></table>
 
-Both galleries: western Great Lakes · 6 November 2025, separate from the
-manuscript's Amazon–Cerrado study area. The banner uses measured quad **VH**.
-[Source windows](docs/figures/panels/sources.json) ·
-[Reproduce these exact six panels](examples/reproduce_figures.py).
+The README live example uses a small window at the AOI center; it is not an
+AOI mask. The notebook computes the center for a supplied AOI. Bundled mode always
+uses its recorded footprint and looks. [Source records](docs/figures/panels/sources.json).
 
-## Batch processing and cleanup
+For a downloaded HDF5, use `process_tile(..., scope="aoi", **area)` for masked
+products or `scope="tile"` for the entire tile. `process_batch(..., workers=1)`
+processes several files in chunks; optional `delete_source=True` removes each
+HDF5 only after successful export. Finish source-based previews before cleanup.
+[Batch, parallelism and storage](docs/BATCH.md).
 
-For several local HDF5 files, use the chosen `settings`, `area` and `scope`:
+## Acknowledgments
 
-```python
-results = pynisar.process_batch(
-    ["scene_1.h5", "scene_2.h5"], "outputs/batch", **settings, **area,
-    scope=scope, chunk_size=256, workers=1, delete_source=False,
-)
-print(results)  # Check each tile's status.
-```
+This study was supported by NASA’s Carbon Monitoring System (CMS,
+**80NSSC23K1257**), Commercial SmallSat Data Scientific Analysis (CSDSA,
+**80NSSC24K0055**), and ICESat-2 (**80NSSC23K0941**); the National Science
+Foundation’s OpenForest4D project (**Award 2409886**); the Joint Fire Science
+Program (**22-2-02-15**, *EMS4D: Multi-Scale Fuel Mapping and Decision Support
+System for the Next Generation of Fire Management*); and the McIntire–Stennis
+Program at the University of Florida (**Accession 7005758**).
 
-Start with one worker for quad-pol. Optional parallel workers increase memory
-use. `delete_source=True` removes each HDF5 only after successful export; finish
-any source-based previews first. Downloading and processing one scene at a time
-reduces input disk usage. [Batch and cleanup guide](docs/BATCH.md).
+Cesar Alvites thanks **CryoCloud** for access to its Python/Jupyter environment,
+supported by NASA grants **80NSSC22K1877** and **80NSSC23K0002**. Manuscript
+processing was performed in **Google Colab**.
+[CryoCloud acknowledgment guidance](https://book.cryointhecloud.com/citing-cryocloud).
 
-Products include GeoTIFFs, statistics CSV and a processing manifest. Small-window
-runs also retain covariance. RSLC remains in radar coordinates and cannot use a
-geographic AOI mask. Terrain correction and carbon prediction are not included.
-[Scientific definitions](docs/POLARIMETRY.md) · [Validation](docs/VALIDATION.md).
+## Reporting issues
 
-## Optional local app
-
-```bash
-python -m pip install ".[app]"
-streamlit run streamlit_app.py --server.address 127.0.0.1
-```
-
-Search scenes, generate Python workflow code, explore examples or process a small
-HDF5 upload. Save the ZIP export to keep temporary app results. Large jobs use the
-Python workflow above. The app stays **local**; no hosting account is required.
-[Notebook example](examples/notebook_quickstart.ipynb) · [Development status](docs/RELEASE.md).
+Please report pyNISAR issues to postdoctoral fellow **Cesar Alvites** at
+[c.alvitediaz@ufl.edu](mailto:c.alvitediaz@ufl.edu), or open a
+[GitHub issue](https://github.com/Cesarito2021/pyNISAR/issues).
 
 ## Citation
 
 Alvites et al. *Early assessment of NISAR L-band SAR and multi-sensor fusion for
 aboveground carbon mapping in the Brazilian Amazon–Cerrado ecotone.*
-**Submitted to Remote Sensing Applications: Society and Environment; not yet published.**
-[Full author list and software citation](CITATION.cff). No publication DOI is assigned.
+**Remote Sensing Applications: Society and Environment (under review).**
+Not yet published; no publication DOI is assigned.
+[Full author list and software citation](CITATION.cff).
 
-## Acknowledgments and license
+## Disclaimer
 
-Cesar Alvites thanks **CryoCloud** for access to its Python/Jupyter environment,
-supported by NASA grants **80NSSC22K1877** and **80NSSC23K0002**. Manuscript
-processing was performed in **Google Colab**. [CryoCloud guidance](https://book.cryointhecloud.com/citing-cryocloud).
+pyNISAR is provided as research software without warranties of accuracy,
+fitness for a particular purpose, or uninterrupted operation. Users are
+responsible for assessing its suitability and validating their results. To the
+extent permitted by applicable law, the authors are not liable for loss or damage
+arising from its use. pyNISAR is not an official NASA or ISRO software product.
 
-**GPL-3.0-only**, matching PyGeoObserver. [License](LICENSE) · [Source and logo credits](docs/PROVENANCE.md).
-Independent research software; no NASA/ISRO endorsement.
+## License
+
+**GNU General Public License v3.0 only (GPL-3.0-only)**, matching PyGeoObserver.
+See [LICENSE](LICENSE) for the terms and [provenance](docs/PROVENANCE.md) for credits.
+
+## Geographic reach
+
+<img src="docs/visitor-map.svg" alt="World map: country and continent traffic data are unavailable" width="100%">
+
+GitHub does not provide country/continent visitor or download statistics.
+External image counters are not reliable geographic trackers on GitHub because
+images are proxied. The map therefore shows **no inferred locations**.
+[Current repository traffic](https://github.com/Cesarito2021/pyNISAR/graphs/traffic) ·
+[Recorded totals and limitations](docs/TRAFFIC.md).

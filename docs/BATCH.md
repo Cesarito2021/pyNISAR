@@ -1,8 +1,7 @@
 # AOI or entire tile, with controlled storage
 
 Install `.[discovery]` for polygon files and NASA access. Use `process_tile()` for
-one saved HDF5, or `process_batch()` for several. The app's search page generates
-this Python workflow; large jobs run in your local Python or notebook session.
+one saved HDF5, or `process_batch()` for several. Run these workflows in local Python, Jupyter, Colab or CryoCloud.
 
 ## Choose the output extent
 

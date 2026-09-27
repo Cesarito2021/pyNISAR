@@ -1,2 +1,0 @@
-.[app]
-streamlit==1.63.0
