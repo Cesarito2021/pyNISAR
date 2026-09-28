@@ -32,13 +32,33 @@ This integrates data access and processing around established polarimetric metho
 
 ## Get started
 
-Download and extract the source ZIP, then install from its folder:
+### Install pyNISAR
+
+Install directly from GitHub in a terminal (Python 3.11+ and Git required):
 
 ```bash
-python -m pip install ".[plot,discovery,notebook]"
+python -m pip install "pyNISAR @ git+https://github.com/Cesarito2021/pyNISAR.git"
 ```
 
-The measured examples run immediately without NASA credentials:
+In a Jupyter, Colab or CryoCloud notebook, use:
+
+```python
+%pip install "pyNISAR @ git+https://github.com/Cesarito2021/pyNISAR.git"
+```
+
+The repository is currently private: Git must already have access through your
+GitHub account. Alternatively, download and extract the source ZIP, then run
+`python -m pip install ./pyNISAR-main` from its parent folder. In a notebook, use
+`%pip install ./pyNISAR-main`. Adjust the folder name if you renamed it.
+
+Discovery, processing, plotting and notebook dependencies are installed
+automatically. No R installation is required. **A PyPI release is not yet
+available**, so `pip install pyNISAR` alone is not the installation method yet.
+
+### Import and use pyNISAR
+
+The package is named **pyNISAR**; its Python import is lowercase: `pynisar`.
+This small bundled example uses measured data and requires no NASA login:
 
 ```python
 import pynisar
@@ -46,8 +66,8 @@ run = pynisar.process_sample("outputs", mode="dual")  # Or mode="quad".
 figures = pynisar.plot_gallery(run)
 ```
 
-**Colab/Jupyter/CryoCloud:** install from the extracted source, then copy the
-cells below into a notebook. The existing [downloadable notebooks](examples/)
+After installation, copy the cells below into a notebook.
+The existing [downloadable notebooks](examples/)
 use the earlier workflow; this README presents the simplified steps.
 
 ## Introduction
