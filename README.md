@@ -46,10 +46,9 @@ run = pynisar.process_sample("outputs", mode="dual")  # Or mode="quad".
 figures = pynisar.plot_gallery(run)
 ```
 
-**Colab:** download a notebook below and the source ZIP; open the notebook in Colab.
-Its installation cell accepts the source ZIP if pyNISAR is not installed.
-**Jupyter/CryoCloud:** install from the extracted source, then open the `.ipynb`.
-[Notebook instructions](docs/NOTEBOOKS.md).
+**Colab/Jupyter/CryoCloud:** install from the extracted source, then copy the
+cells below into a notebook. The existing [downloadable notebooks](examples/)
+use the earlier workflow; this README presents the simplified steps.
 
 ## Introduction
 
@@ -83,92 +82,87 @@ avoid this extra storage. [Product definitions](docs/POLARIMETRY.md).
 
 ## Dual-polarization case
 
-[![Open in Colab](docs/badges/colab.svg)](https://colab.research.google.com/github/Cesarito2021/pyNISAR/blob/main/examples/pyNISAR_dual.ipynb) [![Download Jupyter notebook](docs/badges/jupyter.svg)](https://github.com/Cesarito2021/pyNISAR/raw/refs/heads/main/examples/pyNISAR_dual.ipynb)
-
-Run steps in order. **`LIVE=False` reproduces the measured bundled subset**;
-`LIVE=True` enables NASA access. The full notebook includes whole-HDF5 download
-and alternative-AOI options. Private Colab links require repository access; if
-Colab cannot open the link, download the notebook and use **File → Upload notebook**.
+Run these cells in order after installation. This example searches a small
+Great Lakes area, selects one observation and processes a bounded radar window.
+Use your own NASA Earthdata account.
 
 **Step 1 — Import libraries.**
 
 ```python
-from pathlib import Path
 import earthaccess
+import pandas as pd
 import pynisar
-from pynisar.discovery import collections, search
-from IPython.display import display, HTML
-import base64
+from IPython.display import display, Image
 ```
 
-**Step 2 — Define the study area.**
+**Step 2 — Define the study area.** Coordinates are west, south, east, north.
 
 ```python
-LIVE = False  # False: bundled measured data; True: NASA search and processing.
-area = {"bbox": (-90.215, 46.435, -90.185, 46.465)}
-# Or: area = {"aoi": "study_area.geojson"}
-# Or: area = {"aoi": "study_area.gpkg", "layer": "boundary"}
-dates = {"start": "2025-11-06", "end": "2025-11-07"}
-if "aoi" in area:
-    from pynisar.aoi import read_aoi
-    point = read_aoi(area["aoi"], layer=area.get("layer")).geometry.union_all().representative_point()
-    center = (point.x, point.y)
-else:
-    w, s, e, n = area["bbox"]
-    center = ((w + e) / 2, (s + n) / 2)
+bbox = (-90.215, 46.435, -90.185, 46.465)
+center = (-90.2, 46.45)
 ```
 
-**Step 3 — Sign in to Earthdata.**
+**Step 3 — Sign in to NASA Earthdata.**
 
 ```python
-if LIVE:
-    auth = earthaccess.login(persist=False)
-    if not auth.authenticated:
-        raise RuntimeError("Sign in with your own NASA Earthdata account.")
+auth = earthaccess.login(persist=False)
 ```
 
-**Step 4 — Search NISAR.**
+**Step 4 — Search NISAR.** Show the first six catalogue records.
 
 ```python
-if LIVE:
-    choices = [c for c in collections() if "GSLC" in c["short_name"] and "PROVISIONAL" in c["short_name"]]
-    if not choices:
-        raise RuntimeError("No provisional GSLC collection found. Inspect collections().")
-    scenes = search(choices[0]["concept_id"], **area, **dates, count=50)
-    reference = Path(pynisar.sample("dual").info["source"]).stem
-    scene = next((s for s in scenes if reference in s["umm"]["GranuleUR"]), None)
-    if scene is None:
-        candidates = [s for s in scenes if "_QP" in s["umm"]["GranuleUR"]]
-        if not candidates:
-            raise RuntimeError("No candidate quad acquisition found. Change the AOI/dates or inspect scenes for another polarization.")
-        scene = candidates[0]
-    print(scene["umm"]["GranuleUR"])
+scenes = earthaccess.search_data(
+    short_name="NISAR_L2_GSLC_PROVISIONAL_V1",
+    bounding_box=bbox,
+    temporal=("2025-11-06", "2025-11-07"),
+    count=20,
+)
+pd.json_normalize(scenes)[["umm.GranuleUR"]].head(6)
 ```
 
-**Step 5 — Generate polarimetric products.**
+**Step 5 — Select one scene.** Row 0 selects the first returned observation.
+If the table is empty, change the area or dates before continuing.
 
 ```python
-settings = {"channels": ['HH', 'HV'], "looks": (4, 2)}
-if LIVE:
-    url = next(u for u in scene.data_links() if u.split("?")[0].endswith(".h5"))
-    with pynisar.open_remote(url, max_mb=256) as source:
-        run = pynisar.process(source, "outputs/dual", **settings,
-                             center=center, window_size=256)
-else:
-    run = pynisar.process_sample("outputs/dual", mode="dual")
+scene = scenes[0]
+scene["umm"]["GranuleUR"]
 ```
 
-**Step 6 — Plot the results.**
+**Step 6 — Generate products.** Read a 256 × 256 native-pixel window at the
+study-area center. HTTPS range reads avoid saving the complete HDF5 scene;
+the transfer limit is 256 MiB. Channel availability is checked during processing.
+
+```python
+url = scene.data_links()[0]
+with pynisar.open_remote(url, max_mb=256) as source:
+    run = pynisar.process(
+        source, "outputs/dual",
+        channels=["HH", "HV"],
+        center=center, window_size=256,
+        looks=(4, 2),
+    )
+```
+
+**Step 7 — Inspect the products.** GeoTIFF layers, statistics and a processing
+manifest are saved in the output folder.
+
+```python
+statistics = pd.read_csv(run / "statistics.csv")
+statistics.head(6)
+```
+
+**Step 8 — Show the figures.** Display HH, HV and the polarimetric diagram.
 
 ```python
 figures = pynisar.plot_gallery(run)
-images = "".join('<img style="width:32%;vertical-align:top" src="data:image/png;base64,'
-                 + base64.b64encode(p.read_bytes()).decode() + '">' for p in figures)
-display(HTML(images))
+display(Image(filename=str(figures[0])))
+display(Image(filename=str(figures[1])))
+display(Image(filename=str(figures[2])))
 ```
 
-**Measured result:** HH/HV selected from a quad GSLC acquisition, 6 November
-2025, western Great Lakes. Power is uncorrected mean |S|²; H–α uses the dual C2 basis.
+**Existing measured example:** HH/HV selected from a quad GSLC acquisition,
+6 November 2025, western Great Lakes. Power is uncorrected mean |S|²;
+H–α uses the dual C2 basis. This is dual-channel analysis of a quad acquisition.
 
 <table><tr>
 <td width="33%" align="center"><strong>HH</strong><br><img src="docs/figures/panels/dual_hh.png" alt="dual HH" width="100%"></td>
@@ -178,94 +172,88 @@ display(HTML(images))
 
 ## Quad-polarization case
 
-[![Open in Colab](docs/badges/colab.svg)](https://colab.research.google.com/github/Cesarito2021/pyNISAR/blob/main/examples/pyNISAR_quad.ipynb) [![Download Jupyter notebook](docs/badges/jupyter.svg)](https://github.com/Cesarito2021/pyNISAR/raw/refs/heads/main/examples/pyNISAR_quad.ipynb)
-
-Run steps in order. **`LIVE=False` reproduces the measured bundled subset**;
-`LIVE=True` enables NASA access. The full notebook includes whole-HDF5 download
-and alternative-AOI options. Private Colab links require repository access; if
-Colab cannot open the link, download the notebook and use **File → Upload notebook**.
+Run these cells in order after installation. This example searches a small
+Great Lakes area, selects one observation and processes a bounded radar window.
+Use your own NASA Earthdata account.
 
 **Step 1 — Import libraries.**
 
 ```python
-from pathlib import Path
 import earthaccess
+import pandas as pd
 import pynisar
-from pynisar.discovery import collections, search
-from IPython.display import display, HTML
-import base64
+from IPython.display import display, Image
 ```
 
-**Step 2 — Define the study area.**
+**Step 2 — Define the study area.** Coordinates are west, south, east, north.
 
 ```python
-LIVE = False  # False: bundled measured data; True: NASA search and processing.
-area = {"bbox": (-90.215, 46.435, -90.185, 46.465)}
-# Or: area = {"aoi": "study_area.geojson"}
-# Or: area = {"aoi": "study_area.gpkg", "layer": "boundary"}
-dates = {"start": "2025-11-06", "end": "2025-11-07"}
-if "aoi" in area:
-    from pynisar.aoi import read_aoi
-    point = read_aoi(area["aoi"], layer=area.get("layer")).geometry.union_all().representative_point()
-    center = (point.x, point.y)
-else:
-    w, s, e, n = area["bbox"]
-    center = ((w + e) / 2, (s + n) / 2)
+bbox = (-90.215, 46.435, -90.185, 46.465)
+center = (-90.2, 46.45)
 ```
 
-**Step 3 — Sign in to Earthdata.**
+**Step 3 — Sign in to NASA Earthdata.**
 
 ```python
-if LIVE:
-    auth = earthaccess.login(persist=False)
-    if not auth.authenticated:
-        raise RuntimeError("Sign in with your own NASA Earthdata account.")
+auth = earthaccess.login(persist=False)
 ```
 
-**Step 4 — Search NISAR.**
+**Step 4 — Search NISAR.** Show the first six catalogue records.
 
 ```python
-if LIVE:
-    choices = [c for c in collections() if "GCOV" in c["short_name"] and "PROVISIONAL" in c["short_name"]]
-    if not choices:
-        raise RuntimeError("No provisional GCOV collection found. Inspect collections().")
-    scenes = search(choices[0]["concept_id"], **area, **dates, count=50)
-    reference = Path(pynisar.sample("quad").info["source"]).stem
-    scene = next((s for s in scenes if reference in s["umm"]["GranuleUR"]), None)
-    if scene is None:
-        candidates = [s for s in scenes if "_QP" in s["umm"]["GranuleUR"]]
-        if not candidates:
-            raise RuntimeError("No candidate quad acquisition found. Change the AOI/dates or inspect scenes for another polarization.")
-        scene = candidates[0]
-    print(scene["umm"]["GranuleUR"])
+scenes = earthaccess.search_data(
+    short_name="NISAR_L2_GCOV_PROVISIONAL_V1",
+    bounding_box=bbox,
+    temporal=("2025-11-06", "2025-11-07"),
+    count=20,
+)
+pd.json_normalize(scenes)[["umm.GranuleUR"]].head(6)
 ```
 
-**Step 5 — Generate polarimetric products.**
+**Step 5 — Select one scene.** Row 0 selects the first returned observation.
+If the table is empty, change the area or dates before continuing.
 
 ```python
-settings = {"channels": ['HH', 'HV', 'VH', 'VV'], "looks": (1, 1)}
-settings["reciprocal"] = True
-if LIVE:
-    url = next(u for u in scene.data_links() if u.split("?")[0].endswith(".h5"))
-    with pynisar.open_remote(url, max_mb=256) as source:
-        run = pynisar.process(source, "outputs/quad", **settings,
-                             center=center, window_size=128)
-else:
-    run = pynisar.process_sample("outputs/quad", mode="quad")
+scene = scenes[0]
+scene["umm"]["GranuleUR"]
 ```
 
-**Step 6 — Plot the results.**
+**Step 6 — Generate products.** Read a 128 × 128 native-pixel window at the
+study-area center. HTTPS range reads avoid saving the complete HDF5 scene;
+the transfer limit is 256 MiB. Channel availability is checked during processing.
+
+```python
+url = scene.data_links()[0]
+with pynisar.open_remote(url, max_mb=256) as source:
+    run = pynisar.process(
+        source, "outputs/quad",
+        channels=["HH", "HV", "VH", "VV"],
+        center=center, window_size=128,
+        looks=(1, 1),
+        reciprocal=True,
+    )
+```
+
+**Step 7 — Inspect the products.** GeoTIFF layers, statistics and a processing
+manifest are saved in the output folder.
+
+```python
+statistics = pd.read_csv(run / "statistics.csv")
+statistics.head(6)
+```
+
+**Step 8 — Show the figures.** Display HH, HV and the polarimetric diagram.
 
 ```python
 figures = pynisar.plot_gallery(run)
-images = "".join('<img style="width:32%;vertical-align:top" src="data:image/png;base64,'
-                 + base64.b64encode(p.read_bytes()).decode() + '">' for p in figures)
-display(HTML(images))
+display(Image(filename=str(figures[0])))
+display(Image(filename=str(figures[1])))
+display(Image(filename=str(figures[2])))
 ```
 
-**Measured result:** four-channel GCOV from the same Great Lakes acquisition.
-Power is used as stored (nominal γ⁰); H–A–α uses reciprocal Pauli T3.
-These examples are separate from the manuscript’s Amazon–Cerrado study area.
+**Existing measured example:** four-channel GCOV from the same Great Lakes
+acquisition. Power is used as stored (nominal γ⁰); H–A–α uses reciprocal Pauli T3.
+The calculation explicitly assumes reciprocity.
 
 <table><tr>
 <td width="33%" align="center"><strong>HH</strong><br><img src="docs/figures/panels/quad_hh.png" alt="quad HH" width="100%"></td>
@@ -273,15 +261,17 @@ These examples are separate from the manuscript’s Amazon–Cerrado study area.
 <td width="33%" align="center"><strong>H–A–α · 3D</strong><br><img src="docs/figures/panels/quad_haalpha.png" alt="quad H–A–α · 3D" width="100%"></td>
 </tr></table>
 
-The README live example uses a small window at the AOI center; it is not an
-AOI mask. The notebook computes the center for a supplied AOI. Bundled mode always
-uses its recorded footprint and looks. [Source records](docs/figures/panels/sources.json).
+These figures were generated previously from measured data; the revised code
+above has not been rerun in CryoCloud. Catalogue ordering or reprocessing can
+change the selected scene. [Figure source records](docs/figures/panels/sources.json).
+These examples are separate from the manuscript’s Amazon–Cerrado study area.
 
-For a downloaded HDF5, use `process_tile(..., scope="aoi", **area)` for masked
-products or `scope="tile"` for the entire tile. `process_batch(..., workers=1)`
-processes several files in chunks; optional `delete_source=True` removes each
-HDF5 only after successful export. Finish source-based previews before cleanup.
-[Batch, parallelism and storage](docs/BATCH.md).
+The search box selects scenes; the processing example reads a window at its
+center, not the entire box. For a downloaded HDF5 and a GeoJSON/GeoPackage AOI,
+use `process_tile(..., scope="aoi", aoi="study_area.geojson")` to mask products,
+or `scope="tile"` for the whole tile. `process_batch(..., workers=1)` processes
+files in chunks. Source deletion is optional and occurs only after successful
+export. [Batch, parallelism and storage](docs/BATCH.md).
 
 ## Acknowledgments
 
