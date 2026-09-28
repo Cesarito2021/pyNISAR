@@ -1,7 +1,7 @@
 # Validation of 0.1.0a1
 
 Validation date: **28 September 2026**. This is a research alpha candidate;
-Public release was subsequently authorized; PyPI setup is in progress.
+Public alpha 0.1.0a1 was subsequently published to PyPI on 28 September 2026.
 
 ## Installed distribution on Windows
 
@@ -63,6 +63,7 @@ of a quad acquisition, not a separate dual-only acquisition.
 The CI workflow builds and installs the wheel on Python 3.11–3.14, runs the
 suite against that installation and checks distribution metadata. See the
 repository Actions results for the current commit before releasing.
-The owner subsequently authorized a public alpha release. Publishing requires
-the PyPI account connection described in RELEASE.md. No credentials are stored
-in the repository.
+The owner subsequently authorized and completed the public alpha release.
+The publishing workflow passed its build, installed-wheel tests and upload:
+[release run](https://github.com/Cesarito2021/pyNISAR/actions/runs/36450164568).
+No credentials are stored in the repository.
