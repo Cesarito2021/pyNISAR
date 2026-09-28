@@ -48,9 +48,6 @@ In Jupyter, Colab or CryoCloud:
 %pip install pyNISAR==0.1.0a1
 ```
 
-Discovery, processing, plotting and notebook dependencies install automatically.
-No R installation is required. Python imports use `import pynisar`.
-
 For the development version (Git required):
 
 ```bash
