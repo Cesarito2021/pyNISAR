@@ -60,9 +60,25 @@ The package is named **pyNISAR**; its Python import is lowercase: `pynisar`.
 This small bundled example uses measured data and requires no NASA login:
 
 ```python
+# Import libraries
+import geopandas as gpd
 import pynisar
-run = pynisar.process_sample("outputs", mode="dual")  # Or mode="quad".
-figures = pynisar.plot_gallery(run)
+
+# Load your study area
+# Use a polygon shapefile with a defined coordinate reference system.
+area = gpd.read_file("path/to/study_area.shp")
+
+# Search NISAR scenes
+# Replace the example dates with your study period.
+scenes = pynisar.find_scenes(
+    product="GCOV",
+    aoi=area,
+    start="2026-07-01",
+    end="2026-07-31",
+)
+
+# View search results
+pynisar.scene_table(scenes)
 ```
 
 After installation, copy the cells below into a notebook.
