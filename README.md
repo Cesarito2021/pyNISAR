@@ -14,7 +14,7 @@
 pyNISAR searches NISAR observations, inspects HDF5 products, reads or downloads
 selected data, and generates cross-polarization and polarimetric products for
 applications such as forest monitoring. This research library focuses on **L-band
-GSLC, GCOV and RSLC**, using code developed for [PyGeoObserver](https://github.com/Cesarito2021/pygeoobserver).
+GSLC, GCOV and RSLC**.
 
 Its focus is a guided NISAR workflow: **define an area → search observations →
 access or download data → generate polarimetric products → export maps and figures**.
@@ -155,8 +155,6 @@ search_map = pynisar.plot_search(scenes, area)
 search_map.savefig("search_map.png", dpi=160)
 search_map
 ```
-
-![NISAR search footprints](docs/figures/cryocloud/search_map.png)
 
 **Step 6 — Select one scene.** Choose row 0. Only that observation will be processed.
 
