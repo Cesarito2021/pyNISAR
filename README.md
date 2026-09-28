@@ -33,6 +33,22 @@ This integrates data access and processing around established polarimetric metho
 | Study area | WGS84 box, GeoJSON or a GeoPackage polygon layer. |
 | Storage | Choose a local/notebook output folder. Whole HDF5 scenes may occupy several GB; bounded remote reads avoid saving a complete scene. |
 
+### Data and computing resources
+
+**NASA Earthdata** provides discovery and access to Earth-observation datasets,
+including optical and radar products such as NISAR. Explore available collections
+in [Earthdata Search](https://search.earthdata.nasa.gov/); see
+[NASA data resources](https://science.nasa.gov/earth/data/climate-data/) for more information.
+
+**CryoCloud** is a NASA-supported cloud platform for Earth science research,
+providing JupyterHub/JupyterLab environments for Python workflows. The pyNISAR
+dual- and quad-polarization tutorials were executed in CryoCloud using live NASA
+data to generate the products and figures shown below.
+[Access CryoCloud](https://hub.cryointhecloud.com/) ·
+[About the platform](https://book.cryointhecloud.com/) ·
+[Request access / getting started](https://book.cryointhecloud.com/getting-started/).
+Access requires CryoCloud onboarding.
+
 ## Get started
 
 ### Install pyNISAR
