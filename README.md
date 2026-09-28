@@ -26,7 +26,8 @@ This integrates data access and processing around established polarimetric metho
 
 | Requirement | Configuration |
 |---|---|
-| Python | 3.11 or newer; local Jupyter, Colab or CryoCloud. |
+| Python version | **3.11+** |
+| Tested platforms | **CryoCloud (cloud-hosted JupyterLab)** and local Python environments. Full dual/quad NASA workflows were executed in CryoCloud. |
 | Source access | Public source on GitHub; alpha distribution on PyPI. |
 | NASA credentials | Your own [Earthdata Login](https://urs.earthdata.nasa.gov/) for protected reads/downloads. Search and bundled examples need no login. |
 | Study area | WGS84 box, GeoJSON or a GeoPackage polygon layer. |
