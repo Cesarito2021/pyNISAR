@@ -69,7 +69,7 @@ figures = pynisar.plot_gallery(run)
 ```
 
 After installation, copy the cells below into a notebook.
-The [downloadable notebooks](examples/) contain the same processing steps and
+The [downloadable notebooks](https://github.com/Cesarito2021/pyNISAR/tree/main/examples) contain the same processing steps and
 real CryoCloud outputs. If needed,
 download the notebook and choose **File → Upload notebook** in Colab.
 [Notebook setup](docs/NOTEBOOKS.md).
@@ -388,3 +388,4 @@ installs are not included. [Details](docs/TRAFFIC.md).
 
 Logos identify acknowledged organizations and affiliations; they remain the
 property of their respective owners and do not imply endorsement of pyNISAR.
+
