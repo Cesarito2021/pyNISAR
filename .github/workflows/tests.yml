@@ -5,13 +5,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: ['3.11', '3.12', '3.13']
+        python: ['3.11', '3.12', '3.13', '3.14']
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
-      - run: pip install '.[plot,discovery,dev]'
-      - run: pytest -q
+      - run: python -m pip install build twine pytest
       - run: python -m build
+      - run: python -m pip install dist/*.whl
+      - run: python -m pip check
+      - run: python -m pytest -o pythonpath= -q
       - run: python -m twine check dist/*

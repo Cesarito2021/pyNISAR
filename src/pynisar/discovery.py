@@ -4,6 +4,22 @@ import math
 import warnings
 
 
+def footprint(granule):
+    """Read a catalogue polygon, including earthaccess versions on Python 3.11."""
+    from shapely.geometry import shape, Polygon
+    from shapely.ops import unary_union
+    geo = getattr(granule, '__geo_interface__', None)
+    if geo is not None:
+        return shape(geo['geometry'] if geo.get('type') == 'Feature' else geo)
+    polygons = granule['umm']['SpatialExtent']['HorizontalSpatialDomain']['Geometry']['GPolygons']
+    def ring(boundary):
+        return [(p['Longitude'], p['Latitude']) for p in boundary['Points']]
+    result = unary_union([Polygon(ring(p['Boundary']),
+        [ring(h) for h in p.get('ExclusiveZone', {}).get('Boundaries', [])])
+        for p in polygons])
+    return result
+
+
 class SearchResults(list):
     """Granules plus the candidate limit and missing-footprint count."""
     def __init__(self, granules, *, candidate_count, limit, omitted_footprints=0):
@@ -62,11 +78,10 @@ def search(concept_id, *, start, end, bbox=None, aoi=None, layer=None, count=20,
         from shapely.geometry import shape
         for granule in candidates:
             try:
-                geo = granule.__geo_interface__
-                footprint = shape(geo['geometry'] if geo.get('type') == 'Feature' else geo)
-                if footprint.is_empty or not footprint.is_valid or footprint.geom_type not in ('Polygon','MultiPolygon'):
+                geometry = footprint(granule)
+                if geometry.is_empty or not geometry.is_valid or geometry.geom_type not in ('Polygon','MultiPolygon'):
                     raise ValueError('Unusable granule footprint.')
-                if footprint.intersects(boundary):
+                if geometry.intersects(boundary):
                     matches.append(granule)
             except (ValueError, TypeError, KeyError, AttributeError):
                 omitted += 1

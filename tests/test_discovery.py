@@ -2,6 +2,21 @@ import pytest
 from pynisar.discovery import collections, search
 
 
+def test_legacy_earthaccess_umm_polygon_preserves_holes():
+    from pynisar.discovery import footprint
+    from shapely.geometry import Point
+    def boundary(points):
+        return {'Points': [{'Longitude': x, 'Latitude': y} for x, y in points]}
+    granule = {'umm': {'SpatialExtent': {'HorizontalSpatialDomain': {'Geometry': {
+        'GPolygons': [{'Boundary': boundary([(0,0),(4,0),(4,4),(0,4),(0,0)]),
+            'ExclusiveZone': {'Boundaries': [boundary([(1,1),(2,1),(2,2),(1,2),(1,1)])]}}]
+    }}}}}
+    polygon = footprint(granule)
+    assert polygon.is_valid and polygon.area == 15
+    assert polygon.contains(Point(3,3))
+    assert not polygon.contains(Point(1.5,1.5))
+
+
 class Client:
     def search_datasets(self, **kwargs):
         return [{'meta':{'concept-id':'C1'},'umm':{'ShortName':'NISAR_L2_GCOV','Version':'1'}},

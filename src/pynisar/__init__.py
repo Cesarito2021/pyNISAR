@@ -8,8 +8,10 @@ from .remote import open_remote
 from .samples import sample, process_sample
 from .batch import process_tile, process_batch
 from .gallery import plot_gallery
+from .workflow import square_aoi, find_scenes, scene_table, plot_search, process_scene, process_area
 
 __version__ = '0.1.0a1'
 __all__ = ['inspect', 'read', 'process', 'plot', 'report', 'plot_halpha',
            'plot_haalpha', 'plot_htheta', 'decompose', 'open_remote',
-           'sample', 'process_sample', 'process_tile', 'process_batch', 'plot_gallery']
+           'sample', 'process_sample', 'process_tile', 'process_batch', 'plot_gallery',
+           'square_aoi', 'find_scenes', 'scene_table', 'plot_search', 'process_scene', 'process_area']

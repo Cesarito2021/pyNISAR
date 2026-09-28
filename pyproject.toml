@@ -18,6 +18,11 @@ dependencies = [
 ]
 classifiers = ["Development Status :: 3 - Alpha", "Programming Language :: Python :: 3", "Topic :: Scientific/Engineering :: GIS"]
 
+[project.urls]
+Repository = "https://github.com/Cesarito2021/pyNISAR"
+Documentation = "https://github.com/Cesarito2021/pyNISAR#readme"
+Issues = "https://github.com/Cesarito2021/pyNISAR/issues"
+
 [project.optional-dependencies]
 plot = ["matplotlib>=3.8"]
 notebook = ["ipython>=8", "nbformat>=5"]
