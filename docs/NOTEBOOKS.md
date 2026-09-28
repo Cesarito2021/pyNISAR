@@ -1,7 +1,7 @@
 # Run the dual and quad notebooks
 
 1. Download the source ZIP and a `pyNISAR_dual.ipynb` or `pyNISAR_quad.ipynb`
-   notebook from this private repository with your GitHub account.
+   notebook from this repository.
 2. Rename the ZIP `pynisar_source.zip` and upload it beside the notebook in
    Jupyter/CryoCloud. In Colab, upload the notebook through **File → Upload notebook**,
    then upload the ZIP through the Files sidebar.

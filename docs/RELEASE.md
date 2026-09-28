@@ -1,26 +1,21 @@
-# Release candidate status
+# Alpha publication
 
-pyNISAR 0.1.0a1 is a research alpha candidate. GitHub remains private; no PyPI
-or Zenodo release has been published. The license is GPL-3.0-only, identical to
-PyGeoObserver. The related RSASE manuscript is under review, not published.
+pyNISAR 0.1.0a1 is a research alpha. The owner authorized public GitHub and PyPI
+publication; the PyPI account connection is being configured. The manuscript
+remains under review. GPL-3.0-only is unchanged.
 
-See [VALIDATION.md](VALIDATION.md) for installed-wheel tests and live dual/quad
-CryoCloud executions. Automated CI checks fresh wheel installation and tests on
-Python 3.11–3.14. It never publishes the package.
+Validation: 38 local tests, successful wheel-install CI on Python 3.11–3.14,
+and live NASA dual/quad CryoCloud runs. See [VALIDATION.md](VALIDATION.md).
 
-Before authorizing a public alpha release:
+## PyPI trusted publisher configuration
 
-1. Confirm the latest CI jobs pass and review the included notebooks and figures.
-2. Confirm the PyPI distribution name and owner account/trusted publisher.
-3. Decide when to make GitHub public and update access instructions accordingly.
-4. Build the approved commit, check both distributions and publish only with
-   explicit owner approval. Keep the alpha version until broader validation.
+- Project: `pyNISAR`
+- GitHub owner: `Cesarito2021`
+- Repository: `pyNISAR`
+- Workflow: `publish.yml`
+- Environment: `pypi`
 
-Local development checks:
-
-```bash
-python -m pip install ".[dev]"
-python -m pytest -q
-python -m build
-python -m twine check dist/*
-```
+The publishing workflow runs only when manually dispatched for a version tag.
+It verifies the tag, builds the distributions, installs the wheel, runs tests,
+and checks metadata before publishing through PyPI Trusted Publishing. No API
+key is committed. Ordinary pushes only run tests.

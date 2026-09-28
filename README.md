@@ -9,6 +9,8 @@
 
 # pyNISAR: a Python library for accessing, screening, processing and downloading NASA–ISRO SAR data
 
+**Research alpha — 0.1.0a1.** APIs may change. Please report installation or processing issues; the related manuscript remains **under review**.
+
 **Author:** Cesar Alvites — University of Florida, School of Forest, Fisheries, and Geomatics Sciences.
 
 pyNISAR searches NISAR observations, inspects HDF5 products, reads or downloads
@@ -25,7 +27,7 @@ This integrates data access and processing around established polarimetric metho
 | Requirement | Configuration |
 |---|---|
 | Python | 3.11 or newer; local Jupyter, Colab or CryoCloud. |
-| Source access | This repository is **private**; GitHub permission is required to download it. No PyPI release yet. |
+| Source access | Source code is available from GitHub. PyPI publication is being configured. |
 | NASA credentials | Your own [Earthdata Login](https://urs.earthdata.nasa.gov/) for protected reads/downloads. Search and bundled examples need no login. |
 | Study area | WGS84 box, GeoJSON or a GeoPackage polygon layer. |
 | Storage | Choose a local/notebook output folder. Whole HDF5 scenes may occupy several GB; bounded remote reads avoid saving a complete scene. |
@@ -46,8 +48,7 @@ In a Jupyter, Colab or CryoCloud notebook, use:
 %pip install "pyNISAR @ git+https://github.com/Cesarito2021/pyNISAR.git"
 ```
 
-The repository is currently private: Git must already have access through your
-GitHub account. Alternatively, download and extract the source ZIP, then run
+Alternatively, download and extract the source ZIP, then run
 `python -m pip install ./pyNISAR-main` from its parent folder. In a notebook, use
 `%pip install ./pyNISAR-main`. Adjust the folder name if you renamed it.
 
@@ -68,7 +69,7 @@ figures = pynisar.plot_gallery(run)
 
 After installation, copy the cells below into a notebook.
 The [downloadable notebooks](examples/) contain the same processing steps and
-real CryoCloud outputs. Private Colab links require repository access; if needed,
+real CryoCloud outputs. If needed,
 download the notebook and choose **File → Upload notebook** in Colab.
 [Notebook setup](docs/NOTEBOOKS.md).
 

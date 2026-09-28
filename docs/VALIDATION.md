@@ -1,7 +1,7 @@
 # Validation of 0.1.0a1
 
 Validation date: **28 September 2026**. This is a research alpha candidate;
-GitHub remains private and nothing has been uploaded to PyPI.
+Public release was subsequently authorized; PyPI setup is in progress.
 
 ## Installed distribution on Windows
 
@@ -63,6 +63,6 @@ of a quad acquisition, not a separate dual-only acquisition.
 The CI workflow builds and installs the wheel on Python 3.11–3.14, runs the
 suite against that installation and checks distribution metadata. See the
 repository Actions results for the current commit before releasing.
-Public release still requires the owner's approval, PyPI project-name availability
-and a publisher account or trusted-publishing configuration. No publication was
-attempted and no credentials are stored in the repository.
+The owner subsequently authorized a public alpha release. Publishing requires
+the PyPI account connection described in RELEASE.md. No credentials are stored
+in the repository.
