@@ -1,12 +1,8 @@
 # Run the dual and quad notebooks
 
-1. Download the source ZIP and a `pyNISAR_dual.ipynb` or `pyNISAR_quad.ipynb`
-   notebook from this repository.
-2. Rename the ZIP `pynisar_source.zip` and upload it beside the notebook in
-   Jupyter/CryoCloud. In Colab, upload the notebook through **File → Upload notebook**,
-   then upload the ZIP through the Files sidebar.
-3. Run `%pip install ./pynisar_source.zip`. Discovery, plotting and notebook
-   dependencies are installed automatically. No R is required.
+1. Download either `pyNISAR_dual.ipynb` or `pyNISAR_quad.ipynb` from this repository.
+2. Open it in Jupyter/CryoCloud, or choose **File → Upload notebook** in Colab.
+3. Run `%pip install pyNISAR==0.1.0a1`. Dependencies install automatically.
 4. Run the remaining cells in order: import, create a 5 km square, sign in with
    your own NASA Earthdata account, search, map, choose one scene, process and plot.
 5. Change the coordinates or supply your GeoJSON/GeoPackage to use another AOI.

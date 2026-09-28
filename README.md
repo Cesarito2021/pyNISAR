@@ -27,7 +27,7 @@ This integrates data access and processing around established polarimetric metho
 | Requirement | Configuration |
 |---|---|
 | Python | 3.11 or newer; local Jupyter, Colab or CryoCloud. |
-| Source access | Source code is available from GitHub. PyPI publication is being configured. |
+| Source access | Public source on GitHub; alpha distribution on PyPI. |
 | NASA credentials | Your own [Earthdata Login](https://urs.earthdata.nasa.gov/) for protected reads/downloads. Search and bundled examples need no login. |
 | Study area | WGS84 box, GeoJSON or a GeoPackage polygon layer. |
 | Storage | Choose a local/notebook output folder. Whole HDF5 scenes may occupy several GB; bounded remote reads avoid saving a complete scene. |
@@ -36,25 +36,26 @@ This integrates data access and processing around established polarimetric metho
 
 ### Install pyNISAR
 
-Install directly from GitHub in a terminal (Python 3.11+ and Git required):
+Install the alpha release with Python 3.11 or newer:
+
+```bash
+python -m pip install pyNISAR==0.1.0a1
+```
+
+In Jupyter, Colab or CryoCloud:
+
+```python
+%pip install pyNISAR==0.1.0a1
+```
+
+Discovery, processing, plotting and notebook dependencies install automatically.
+No R installation is required. Python imports use `import pynisar`.
+
+For the development version (Git required):
 
 ```bash
 python -m pip install "pyNISAR @ git+https://github.com/Cesarito2021/pyNISAR.git"
 ```
-
-In a Jupyter, Colab or CryoCloud notebook, use:
-
-```python
-%pip install "pyNISAR @ git+https://github.com/Cesarito2021/pyNISAR.git"
-```
-
-Alternatively, download and extract the source ZIP, then run
-`python -m pip install ./pyNISAR-main` from its parent folder. In a notebook, use
-`%pip install ./pyNISAR-main`. Adjust the folder name if you renamed it.
-
-Discovery, processing, plotting and notebook dependencies are installed
-automatically. No R installation is required. **A PyPI release is not yet
-available**, so `pip install pyNISAR` alone is not the installation method yet.
 
 ### Import and use pyNISAR
 
