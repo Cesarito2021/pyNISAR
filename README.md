@@ -353,7 +353,7 @@ Program at the University of Florida (**Accession 7005758**).
 
 Cesar Alvites thanks **CryoCloud** for access to its Python/Jupyter environment,
 supported by NASA grants **80NSSC22K1877** and **80NSSC23K0002**. Manuscript
-processing was performed in **Google Colab**.
+processing was performed in **Jupyter notebook** and **Google Colab**.
 [CryoCloud acknowledgment guidance](https://book.cryointhecloud.com/citing-cryocloud).
 
 We acknowledge [PolSARtools](https://github.com/polsartools/polsartools) and its
